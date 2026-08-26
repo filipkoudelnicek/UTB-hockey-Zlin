@@ -11,6 +11,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
 use Awcodes\Curator\Facades\Curator;
+use Awcodes\Curator\Components\Forms\CuratorPicker;
 use Awcodes\Curator\Models\Media as CuratorMedia;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,5 +31,9 @@ class AppServiceProvider extends ServiceProvider
 
         // Set Curator default directory from config so uploads never have null directory
         Curator::directory(config('curator.default_directory', 'media'));
+        Curator::maxSize(config('curator.max_size', 51200));
+        CuratorPicker::configureUsing(function (CuratorPicker $component): void {
+            $component->maxSize(config('curator.max_size', 51200));
+        });
     }
 }

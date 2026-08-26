@@ -14,7 +14,7 @@ class CuratorImageOptimizer
     public const WEBP_QUALITY = 85;
 
     /** Prevent unnecessarily large uploads without ever upscaling an image. */
-    public const MAX_DIMENSION = 2560;
+    public const MAX_DIMENSION = 1920;
 
     /** @var list<string> */
     private const OPTIMIZABLE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'bmp', 'webp'];
