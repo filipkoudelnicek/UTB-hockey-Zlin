@@ -6,10 +6,12 @@ use App\Filament\Modules\SeoModule;
 use App\Models\Language;
 use App\Models\Page;
 use App\Models\PageType;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Forms\Components\Toggle;
@@ -24,9 +26,10 @@ use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 
-class PageResource extends Resource
+class PageResource extends AdminResource
 {
     protected static ?string $model = Page::class;
+    protected static ?string $permissionKey = 'content.pages';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
     protected static ?string $navigationLabel = 'Stránky';
@@ -37,6 +40,8 @@ class PageResource extends Resource
 
     public static function form(Schema $form): Schema
     {
+        $hasMultipleLanguages = Language::hasMultipleActive();
+
         $computePreview = function (callable $get, callable $set): void {
             $slug   = trim((string) $get('slug'), '/');
             $type   = $get('type');
@@ -64,12 +69,26 @@ class PageResource extends Resource
             $set('full_slug', $slug === '' ? '/' : $slug);
         };
 
+        $languageField = $hasMultipleLanguages
+            ? Select::make('lang_locale')->label('Jazyk')
+                ->options(fn () => Language::activeOptions())
+                ->default(fn () => Language::defaultActiveLocale() ?? 'cs')
+                ->required()
+                ->live()
+                ->afterStateUpdated(function ($get, $set) use ($computePreview) {
+                    $computePreview($get, $set);
+                })
+            : \Filament\Forms\Components\Hidden::make('lang_locale')
+                ->default(fn () => Language::defaultActiveLocale() ?? 'cs')
+                ->dehydrated();
+
         return $form->schema([
             Section::make('Nastavení stránky')
                 ->schema([
-                    Grid::make(2)
+                    Grid::make($hasMultipleLanguages ? 4 : 3)
                         ->schema([
-                            TextInput::make('title')->label('Název')
+                            TextInput::make('title')->label('Název stránky')
+                                ->helperText('Tento název se zobrazuje v administraci a může se použít v navigaci.')
                                 ->required()
                                 ->live(onBlur: true)
                                 ->afterStateUpdated(function ($operation, $state, $set){
@@ -78,7 +97,8 @@ class PageResource extends Resource
                                     }
                                     $set('slug', Str::slug($state));
                                 }),
-                            TextInput::make('slug')->label('Slug')
+                            TextInput::make('slug')->label('Část URL adresy')
+                                ->helperText('Krátký název v URL, například „kontakt“. Nepoužívejte mezery ani diakritiku.')
                                 ->required()
                                 ->minLength(1)
                                 ->maxLength(255)
@@ -91,25 +111,13 @@ class PageResource extends Resource
                                         ->where('lang_locale', $get('lang_locale'))
                                         ->where('slug', $get('slug'));
                                 }),
-                        ]),
-
-                    Grid::make(2)
-                        ->schema([
-                            Select::make('lang_locale')->label('Jazyk')
-                                ->options(Language::where('active', 1)->pluck('name', 'locale'))
-                                ->required()
-                                ->live()
-                                ->afterStateUpdated(function ($get, $set) use ($computePreview) {
-                                    $computePreview($get, $set);
-                                }),
-                            Select::make('type')->label('Typ stránky')
+                            $languageField,
+                            Select::make('type')->label('Šablona stránky')
+                                ->helperText('Určuje, jaké obsahové bloky budete na stránce upravovat. Po vytvoření ji nelze změnit.')
                                 ->options(fn () => PageType::allAsOptions())
                                 ->live()
                                 ->required()
-                                ->afterStateUpdated(function (Select $component, $get, $set) use ($computePreview) {
-                                    if ($section = $component->getContainer()->getComponent('pageTypes')) {
-                                        $section->getChildSchema()->fill();
-                                    }
+                                ->afterStateUpdated(function ($get, $set) use ($computePreview) {
                                     $computePreview($get, $set);
                                 })
                                 ->disabledOn('edit')
@@ -125,15 +133,15 @@ class PageResource extends Resource
                                 ->formatStateUsing(fn ($state) => $state === '' || $state === null ? '/' : $state)
                                 ->placeholder('Vyberte typ a vyplňte slug...')
                                 ->helperText('Automaticky generováno z Route Builderu.'),
-
-                            Toggle::make('active')->label('Aktivní stránka'),
+                            Toggle::make('active')->label('Zobrazit stránku na webu')
+                                ->helperText('Vypnutá stránka zůstane uložená, ale návštěvníci ji neuvidí.'),
                         ]),
-                ]),
+                ])->columns(1),
 
-            Section::make('Obsah')
+            Section::make('Obsah stránky')
+                ->description('Všechny části stránky jsou otevřené. Upravujte jen bloky, které chcete zobrazit na webu.')
                 ->schema([
-                    Section::make()
-                        ->schema(function ($get) {
+                    Group::make(function ($get) {
                             $type = $get('type');
                             if (!$type) return [];
 
@@ -147,10 +155,14 @@ class PageResource extends Resource
                             } catch (\Throwable $e) {
                                 // ignoruj
                             }
-
                             return [];
                         })
                         ->key('pageTypes'),
+
+                    RichEditor::make('content.text')
+                        ->label('Obsah')
+                        ->visible(fn ($get): bool => $get('type') === 'text')
+                        ->columnSpanFull(),
                 ]),
 
             ...SeoModule::make(),
@@ -162,7 +174,7 @@ class PageResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')->sortable()->searchable()->label('Název'),
-                TextColumn::make('pageType.template')->label('Šablona')->badge()->color('gray'),
+                TextColumn::make('pageType.admin_label')->label('Šablona')->badge()->color('gray'),
                 TextColumn::make('full_slug')->label('URL cesta')
                     ->getStateUsing(fn ($record) => ($record->full_slug === '' || $record->full_slug === null) ? '/' : $record->full_slug)
                     ->searchable(),

@@ -17,9 +17,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
-class RedirectResource extends Resource
+class RedirectResource extends AdminResource
 {
     protected static ?string $model = Redirect::class;
+    protected static ?string $permissionKey = 'website.redirects';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowTopRightOnSquare;
     protected static ?string $navigationLabel    = 'Přesměrování';

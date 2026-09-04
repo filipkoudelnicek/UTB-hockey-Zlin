@@ -10,3 +10,5 @@
     />
     <span class="fi-btn-label">Zobrazit web</span>
 </a>
+
+<livewire:generate-sitemap-button />

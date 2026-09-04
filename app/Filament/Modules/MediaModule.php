@@ -11,7 +11,7 @@ use Filament\Forms\Components\TextInput;
  * Reusable media helpers for Filament schemas.
  *
  * Usage:
- *   MediaModule::single('content.banner', 'Hlavní obrázek')
+ *   MediaModule::single('content.hero_image', 'Hlavní obrázek')
  *   MediaModule::gallery('content.gallery', 'Galerie')
  *   MediaModule::slider('content.slides', 'Slider')   // includes title/text/button per slide
  */

@@ -21,7 +21,12 @@ class MenuManager extends FilamentPage
     protected static ?string  $navigationLabel = 'Správa menu';
     protected static ?string  $title           = 'Správa menu';
     protected static string|\UnitEnum|null $navigationGroup = 'Obsah';
-    protected static ?int     $navigationSort  = 4;
+    protected static ?int     $navigationSort  = 6;
+
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasPermission('content.menu') ?? false;
+    }
 
     public function getTitle(): string|\Illuminate\Contracts\Support\Htmlable
     {
@@ -235,7 +240,7 @@ class MenuManager extends FilamentPage
         $article = Article::find($id);
         if (! $article) return;
 
-        $this->items[] = $this->makeItem($article->title, $article->url ?? '#', '_self', 'article', $id);
+        $this->items[] = $this->makeItem($article->plain_title, $article->url ?? '#', '_self', 'article', $id);
     }
 
     private function makeItem(string $label, string $url, string $target, string $type, ?int $modelId = null): array
@@ -494,8 +499,10 @@ class MenuManager extends FilamentPage
                         ->rules(['unique:navigations,handle']),
                     Select::make('lang_locale')
                         ->label('Jazyk')
-                        ->options(fn () => Language::where('active', true)->pluck('name', 'locale'))
-                        ->default(fn () => $this->locale)
+                        ->options(fn () => Language::activeOptions())
+                        ->default(fn () => $this->locale ?? Language::defaultActiveLocale())
+                        ->hidden(fn () => ! Language::hasMultipleActive())
+                        ->dehydratedWhenHidden()
                         ->required(),
                 ])
                 ->modalHeading('Vytvořit nové menu')

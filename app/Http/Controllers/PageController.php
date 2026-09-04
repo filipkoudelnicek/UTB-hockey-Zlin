@@ -3,17 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
-use App\Models\Language;
-use Illuminate\Http\Request;
 use App\Services\MediaService;
+use App\Services\PageDataService;
 use App\Services\UrlService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class PageController extends Controller
 {
-    protected $defaultLocale;
+    protected string $defaultLocale;
 
-    public function __construct()
+    public function __construct(private readonly PageDataService $pageData)
     {
         $this->defaultLocale = UrlService::getDefaultLocale();
     }
@@ -21,7 +21,7 @@ class PageController extends Controller
     public function homepage(Request $request)
     {
         if (!Schema::hasTable('pages')) {
-            return redirect('/admin');
+            return redirect('/admin-utb');
         }
         
         $locale = $request->route('locale') ?? $this->defaultLocale;
@@ -33,28 +33,35 @@ class PageController extends Controller
                 ->first();
                 
             if (!$page) {
-                return redirect('/admin');
+                return redirect('/admin-utb');
             }
 
-            $template = optional($page->pageType)->template ?? 'pages.homepage';
-            return view($template, ['page' => $page]);
-        } catch (\Exception $e) {
-            return redirect('/admin');
+            return $this->render($page, $request);
+        } catch (\Throwable $e) {
+            return redirect('/admin-utb');
         }
     }
     
-    public function show(Request $request, $slug = '')
+    public function show(Request $request, ...$routeParameters)
     {
         if (!Schema::hasTable('pages')) {
             abort(404);
         }
         
         $locale = $request->route('locale') ?? $this->defaultLocale;
-        $slug   = ltrim((string) $slug, '/');
+        $fullSlug = trim($request->path(), '/');
+
+        if ($locale !== $this->defaultLocale) {
+            if ($fullSlug === $locale) {
+                $fullSlug = '';
+            } elseif (str_starts_with($fullSlug, $locale . '/')) {
+                $fullSlug = substr($fullSlug, strlen($locale) + 1);
+            }
+        }
         
         try {
             $page = Page::active()
-                ->where('full_slug', $slug)
+                ->where('full_slug', $fullSlug)
                 ->where('lang_locale', $locale)
                 ->first();
                 
@@ -62,11 +69,20 @@ class PageController extends Controller
                 abort(404);
             }
 
-            $template = optional($page->pageType)->template ?? 'pages.' . $page->type;
-            return view($template, ['page' => $page]);
-        } catch (\Exception $e) {
+            return $this->render($page, $request);
+        } catch (\Throwable $e) {
             abort(404);
         }
+    }
+
+    private function render(Page $page, Request $request)
+    {
+        $template = optional($page->pageType)->template ?? 'pages.' . $page->type;
+
+        return view($template, array_merge(
+            ['page' => $page],
+            $this->pageData->forPage($page, $request),
+        ));
     }
     
     public static function getMediaUrl($mediaId)

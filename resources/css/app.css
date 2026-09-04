@@ -1,7 +1,268 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views";
 
 @theme {
-    --font-sans: 'Figtree', ui-sans-serif, system-ui, sans-serif;
+    --color-wine: #6a1b21;
+    --color-wine-dark: #3d0a0e;
+    --color-orange: #f47800;
+    --color-orange-css: #f57800;
+    --color-gold: #f47800;
+    --color-ink: #151313;
+    --color-ink-css: #171312;
+    --color-paper: #f6f3ed;
+    --color-paper-2: #efe9e3;
+    --color-muted: #817d79;
+    --color-line: #ede9e3;
+    --color-nav-ink: #302d2b;
+    --color-control-line: #e5e0da;
+    --color-nav-divider: #f0ebe4;
+    --color-success: #2d7a3a;
+    --color-dot-muted: #d8d1ca;
+    --color-instagram: #d6295a;
+    --color-facebook: #1877f2;
+    --color-orange-hover: #ff8c1a;
+    --color-wine-hover: #501318;
+
+    --font-sans: 'Inter', sans-serif;
+    --font-condensed: 'Barlow Condensed', sans-serif;
+
+    --text-9: 9px;
+    --text-10: 10px;
+    --text-11: 11px;
+    --text-13: 13px;
+    --text-15: 15px;
+    --text-17: 17px;
+    --text-23: 23px;
+    --text-25: 25px;
+    --text-28: 28px;
+    --text-30: 30px;
+    --text-34: 34px;
+    --text-42: 42px;
+    --text-48: 48px;
+    --text-52: 52px;
+    --text-56: 56px;
+    --text-60: 60px;
+    --text-86: 86px;
+    --text-94: 94px;
+    --text-118: 118px;
+    --text-180: 180px;
+    --text-section-title: clamp(3.2rem, 5vw, 5.1rem);
+    --text-section-title--line-height: 1;
+    --text-section-title-mobile: clamp(2.7rem, 13vw, 4.4rem);
+    --text-section-title-mobile--line-height: 1;
+    --text-page-title: clamp(58px, 7vw, 88px);
+    --text-page-title--line-height: .95;
+    --text-page-title-tight: clamp(58px, 7vw, 88px);
+    --text-page-title-tight--line-height: .88;
+    --text-article-title: clamp(52px, 7vw, 82px);
+    --text-article-title--line-height: .95;
+    --text-section-lg: clamp(48px, 5vw, 68px);
+    --text-section-lg--line-height: 1;
+    --text-section-md: clamp(48px, 5vw, 64px);
+    --text-section-md--line-height: 1;
+    --text-section-sm: clamp(36px, 4vw, 52px);
+    --text-section-sm--line-height: 1;
+    --text-hero: 118px;
+    --text-hero--line-height: .9;
+    --text-hero-mobile: clamp(3.5rem, 15vw, 6rem);
+    --text-hero-mobile--line-height: .9;
+    --text-band: clamp(4.2rem, 8vw, 9.2rem);
+    --text-band--line-height: .9;
+    --text-promo: clamp(4.2rem, 7vw, 7.8rem);
+    --text-promo--line-height: .8;
+    --text-score: clamp(3.5rem, 4vw, 4.5rem);
+    --text-score--line-height: .9;
+    --text-stat: clamp(2.7rem, 4vw, 4rem);
+    --text-stat--line-height: 1;
+
+    --tracking-nav: .08em;
+    --tracking-label: .1em;
+    --tracking-stat: .12em;
+    --tracking-meta: .14em;
+    --tracking-eyebrow: .15em;
+    --tracking-action: .16em;
+    --tracking-micro: .18em;
+    --tracking-promo: .2em;
+
+    --leading-70: .7;
+    --leading-80: .8;
+    --leading-82: .82;
+    --leading-88: .88;
+    --leading-90: .9;
+    --leading-92: .92;
+    --leading-95: .95;
+    --leading-158: 1.58;
+    --leading-160: 1.6;
+    --leading-170: 1.7;
+
+    --opacity-7: 7%;
+    --opacity-8: 8%;
+    --opacity-12: 12%;
+    --opacity-14: 14%;
+    --opacity-16: 16%;
+    --opacity-18: 18%;
+    --opacity-20: 20%;
+    --opacity-22: 22%;
+    --opacity-25: 25%;
+    --opacity-28: 28%;
+    --opacity-32: 32%;
+    --opacity-35: 35%;
+    --opacity-36: 36%;
+    --opacity-38: 38%;
+    --opacity-40: 40%;
+    --opacity-45: 45%;
+    --opacity-46: 46%;
+    --opacity-50: 50%;
+    --opacity-55: 55%;
+    --opacity-58: 58%;
+    --opacity-60: 60%;
+    --opacity-62: 62%;
+    --opacity-64: 64%;
+    --opacity-65: 65%;
+    --opacity-68: 68%;
+    --opacity-70: 70%;
+    --opacity-72: 72%;
+    --opacity-74: 74%;
+    --opacity-75: 75%;
+    --opacity-80: 80%;
+    --opacity-82: 82%;
+    --opacity-85: 85%;
+    --opacity-88: 88%;
+    --opacity-90: 90%;
+    --opacity-94: 94%;
+    --opacity-96: 96%;
+    --opacity-97: 97%;
+
+    --outline-width-3: 3px;
+    --outline-offset-3: 3px;
+}
+
+@custom-variant max-small (@media (max-width: 640px));
+@custom-variant max-mobile (@media (max-width: 760px));
+@custom-variant max-partner (@media (max-width: 767px));
+@custom-variant max-md-exact (@media (max-width: 768px));
+@custom-variant max-tablet (@media (max-width: 980px));
+
+@utility w-shell {
+    width: min(1170px, calc(100% - 48px));
+}
+
+@utility w-shell-mobile {
+    width: min(100%, calc(100% - 28px));
+}
+
+@utility w-article {
+    width: min(760px, calc(100% - 48px));
+}
+
+.venue-map--unavailable {
+    background: #6a1b21;
+}
+
+.venue-map-marker {
+    background: transparent;
+    border: 0;
+}
+
+.venue-map-marker__dot {
+    position: relative;
+    display: block;
+    width: 38px;
+    height: 38px;
+    border: 4px solid #fff;
+    border-radius: 9999px 9999px 9999px 0;
+    background: #f57800;
+    box-shadow: 0 8px 18px rgba(67, 13, 18, .32);
+    transform: rotate(-45deg);
+}
+
+.venue-map-marker__dot::after {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: #6a1b21;
+    content: '';
+}
+
+.venue-map-popup .leaflet-popup-content-wrapper {
+    border-radius: 18px;
+    background: #6a1b21;
+    box-shadow: 0 18px 36px rgba(67, 13, 18, .28);
+    color: #fff;
+}
+
+.venue-map-popup .leaflet-popup-content {
+    width: 177px !important;
+    max-width: 177px !important;
+    margin: 0;
+}
+
+.venue-map-popup .leaflet-popup-tip {
+    background: #6a1b21;
+}
+
+.venue-map-popup__content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+}
+
+.venue-map-popup__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.venue-map-popup__logo {
+    display: block;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.venue-map-popup__title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 900;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.venue-map-popup__address {
+    color: rgba(255, 255, 255, .74);
+    font-size: .875rem;
+}
+
+.venue-map-popup__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+    color: #f57800 !important;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .72rem;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-decoration: none;
+}
+
+.venue-map-popup__link-icon {
+    display: inline-flex;
+    width: 13px;
+    height: 13px;
+}
+
+.venue-map-popup__link-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.venue-map-popup__link:hover {
+    color: #fff !important;
 }

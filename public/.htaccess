@@ -1,37 +1,58 @@
 <IfModule mod_rewrite.c>
+
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
 
-    <IfModule mod_headers.c>
-        Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    </IfModule>
-
     RewriteEngine On
 
-    # Force non-www
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
 
-    # Přesměrování z /index.php nebo /index.html na kořenovou URL
-    RewriteCond %{THE_REQUEST} /index\.(php|html)\ HTTP
-    RewriteRule ^index\.(php|html)$ https://%{HTTP_HOST}/ [R=301,L]
+    # ----------------------------------------------------------
+    # Security headers
+    # ----------------------------------------------------------
+    <IfModule mod_headers.c>
+        Header always set Strict-Transport-Security "max-age=31536000"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    </IfModule>
 
-    # Redirect trailing slashes if not a folder...
+
+    # ----------------------------------------------------------
+    # /index.php a /index.html -> /
+    # ----------------------------------------------------------
+    RewriteCond %{THE_REQUEST} \s/+index\.(?:php|html)(?:[\s?]) [NC]
+    RewriteRule ^index\.(?:php|html)$ / [R=301,L]
+
+
+    # ----------------------------------------------------------
+    # Odstranit trailing slash
+    # Výjimka pro skutečné adresáře a /api/
+    # ----------------------------------------------------------
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} ^(?!\/api\/)(.+)\/$
-    RewriteRule ^ %1 [L,R=301]
+    RewriteCond %{REQUEST_URI} !^/api(?:/|$) [NC]
+    RewriteCond %{REQUEST_URI} ^(.+)/$
+    RewriteRule ^ %1 [R=301,L]
 
-    # Handle Authorization Header
+
+    # ----------------------------------------------------------
+    # Authorization header
+    # ----------------------------------------------------------
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
+
+    # ----------------------------------------------------------
+    # X-XSRF-Token header
+    # ----------------------------------------------------------
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Send Requests To Front Controller...
+
+    # ----------------------------------------------------------
+    # Laravel front controller
+    # ----------------------------------------------------------
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
 </IfModule>

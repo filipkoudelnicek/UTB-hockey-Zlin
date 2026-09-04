@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use DateTimeInterface;
 use App\Models\Page;
 use App\Models\Article;
+use App\Models\Player;
 use App\Models\Language;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
@@ -144,6 +146,17 @@ class UrlService
         }
     }
 
+    private static function createSitemapUrl(string $url, ?DateTimeInterface $lastModified): Url
+    {
+        $sitemapUrl = Url::create($url);
+
+        if ($lastModified) {
+            $sitemapUrl->setLastModificationDate($lastModified);
+        }
+
+        return $sitemapUrl;
+    }
+
     /**
      * Sestaví Sitemap objekt (pro dynamický response i zápis do souboru)
      */
@@ -153,24 +166,61 @@ class UrlService
         $languages = self::getLanguages();
         $defaultLocale = self::getDefaultLocale();
 
-        $sitemap->add(Url::create(self::getHomepageUrl()));
+        $homepage = PageService::getPageByType('homepage', $defaultLocale);
+        $sitemap->add(self::createSitemapUrl(
+            self::getHomepageUrl(),
+            $homepage?->updated_at ?? $homepage?->created_at,
+        ));
 
         foreach ($languages as $language) {
             if ($language->locale !== $defaultLocale) {
-                $sitemap->add(Url::create(self::getHomepageUrl($language->locale)));
+                $homepage = PageService::getPageByType('homepage', $language->locale);
+                $sitemap->add(self::createSitemapUrl(
+                    self::getHomepageUrl($language->locale),
+                    $homepage?->updated_at ?? $homepage?->created_at,
+                ));
             }
         }
 
         PageService::getActivePages()
             ->each(function ($page) use ($sitemap) {
                 if ($page->type === 'homepage') return;
-                $sitemap->add(Url::create(PageService::getPageUrl($page)));
+                $sitemap->add(self::createSitemapUrl(
+                    PageService::getPageUrl($page),
+                    $page->updated_at ?? $page->created_at,
+                ));
             });
 
         ArticleService::getActiveArticles()
             ->each(function ($article) use ($sitemap) {
-                $sitemap->add(Url::create(ArticleService::getArticleUrl($article)));
+                $sitemap->add(self::createSitemapUrl(
+                    ArticleService::getArticleUrl($article),
+                    $article->updated_at ?? $article->created_at,
+                ));
             });
+
+        $locales = $languages->isNotEmpty()
+            ? $languages->pluck('locale')
+            : collect([$defaultLocale]);
+
+        foreach ($locales as $locale) {
+            $teamPage = PageService::getPageByType('team', $locale);
+
+            if (! $teamPage) {
+                continue;
+            }
+
+            Player::active()
+                ->whereNotNull('slug')
+                ->where('slug', '!=', '')
+                ->get()
+                ->each(function ($player) use ($sitemap, $teamPage) {
+                    $sitemap->add(self::createSitemapUrl(
+                        url(trim($teamPage->url, '/') . '/' . $player->slug),
+                        $player->updated_at ?? $player->created_at,
+                    ));
+                });
+        }
 
         return $sitemap;
     }

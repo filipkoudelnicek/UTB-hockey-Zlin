@@ -1,15 +1,12 @@
 <x-mail::message>
 # Nová zpráva z kontaktního formuláře
 
-**Jméno:** {{ $formData['name'] }}<br>
-**Email:** {{ $formData['email'] }}<br>
-@if(isset($formData['phone']))
-**Telefon:** {{ $formData['phone'] }}<br>
-@endif
+**Jméno:** {{ $formData['name'] }}  
+**E-mail:** {{ $formData['email'] }}  
+**Předmět:** {{ $formData['subject'] }}
 
-## Zpráva:
+## Zpráva
 {{ $formData['message'] }}
 
-Děkujeme,<br>
 {{ config('app.name') }}
 </x-mail::message>

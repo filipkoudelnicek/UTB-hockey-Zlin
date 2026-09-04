@@ -16,7 +16,7 @@ class MediaService
         }
         
         $media = Media::find($mediaId);
-        return $media ? '/storage/' . $media->path : null;
+        return $media ? '/uploads/' . ltrim($media->path, '/') : null;
     }
 
     /**
@@ -30,7 +30,7 @@ class MediaService
 
         $media = Media::find($mediaId);
 
-        return $media ? url('/storage/' . ltrim($media->path, '/')) : null;
+        return $media ? url('/uploads/' . ltrim($media->path, '/')) : null;
     }
 
 }

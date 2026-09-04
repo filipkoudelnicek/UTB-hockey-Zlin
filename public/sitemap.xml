@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
     <url>
-    <loc>http://localhost</loc>
+    <loc>https://utbhockey.cz</loc>
             </url>
     <url>
-    <loc>http://localhost/blog</loc>
+    <loc>https://utbhockey.cz/zapasy</loc>
             </url>
     <url>
-    <loc>http://localhost/kontakt</loc>
+    <loc>https://utbhockey.cz/tym</loc>
             </url>
     <url>
-    <loc>http://localhost/o-nas</loc>
+    <loc>https://utbhockey.cz/aktuality</loc>
             </url>
     <url>
-    <loc>http://localhost/o-webu</loc>
+    <loc>https://utbhockey.cz/klub</loc>
             </url>
     <url>
-    <loc>http://localhost/blog/vitejte-na-blogu</loc>
+    <loc>https://utbhockey.cz/kontakt</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/vstupujeme-do-nove-sezony</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/clenska-zakladna-roste</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/vyhra-v-brne</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/trener-tym-ma-charakter</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/permanentky-jsou-v-prodeji</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/letni-trenink-zacal</loc>
+            </url>
+    <url>
+    <loc>https://utbhockey.cz/aktuality/stadion-se-pripravuje</loc>
             </url>
 </urlset>

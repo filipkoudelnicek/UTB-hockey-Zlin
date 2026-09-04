@@ -31,7 +31,8 @@ class PageType extends Model
     public static function clearCache(string $handle): void
     {
         Cache::forget("page_type.{$handle}");
-        Cache::forget('page_types.all');
+        Cache::forget('page_types.admin_options');
+        Cache::forget('page_types.all_by_id');
     }
 
     /**
@@ -39,9 +40,26 @@ class PageType extends Model
      */
     public static function allAsOptions(): array
     {
-        return Cache::rememberForever('page_types.all', function () {
-            return static::orderBy('label')->pluck('label', 'handle')->toArray();
+        return Cache::rememberForever('page_types.admin_options', function () {
+            return static::orderBy('label')
+                ->get()
+                ->mapWithKeys(fn (self $pageType): array => [$pageType->handle => $pageType->admin_label])
+                ->all();
         });
+    }
+
+    public function getAdminLabelAttribute(): string
+    {
+        return match ($this->handle) {
+            'homepage' => 'Úvodní stránka',
+            'matches' => 'Přehled zápasů',
+            'team' => 'Představení týmu',
+            'blog' => 'Přehled aktualit',
+            'about' => 'O klubu',
+            'contact' => 'Kontakty',
+            'text' => 'Textová stránka',
+            default => $this->label,
+        };
     }
 
     /**

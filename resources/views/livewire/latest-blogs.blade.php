@@ -2,11 +2,13 @@
     @foreach ($latestArticles as $post)
         <article class="group flex flex-col rounded-2xl overflow-hidden border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
 
-            @isset($post->content['thumbnail'])
-                <a href="{{ $this->getArticleUrl($post) }}" class="block overflow-hidden aspect-video bg-gray-100">
-                    <x-curator-glider :media="$post->content['thumbnail']" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </a>
-            @endisset
+            <a href="{{ $this->getArticleUrl($post) }}" class="block overflow-hidden aspect-video bg-gray-100">
+                <img
+                    src="{{ $post->featured_image_url ?: asset('assets/obrazky/article.webp') }}"
+                    alt="{{ $post->plain_title }}"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                >
+            </a>
 
             <div class="flex flex-col flex-1 p-6 gap-3">
                 <div class="flex items-center gap-2 text-xs text-gray-400">
@@ -19,7 +21,7 @@
 
                 <a href="{{ $this->getArticleUrl($post) }}" class="flex-1">
                     <h3 class="text-lg font-semibold text-gray-900 group-hover:text-violet-600 transition-colors leading-snug line-clamp-3">
-                        {{ $post->title }}
+                        {{ $post->plain_title }}
                     </h3>
                 </a>
 

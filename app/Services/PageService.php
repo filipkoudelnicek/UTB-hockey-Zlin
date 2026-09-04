@@ -103,5 +103,23 @@ class PageService
         }
     }
 
+    /** Find the active page for a template/type in a locale. */
+    public static function getPageByType(string $type, ?string $locale = null): ?Page
+    {
+        if (!Schema::hasTable('pages')) {
+            return null;
+        }
+
+        $locale = $locale ?? UrlService::getDefaultLocale();
+        return Page::active()->where('type', $type)->where('lang_locale', $locale)->first();
+    }
+
+    /** Return a relative dynamic URL for a page type. */
+    public static function getRelativeUrlByType(string $type, ?string $locale = null, string $fallback = '/'): string
+    {
+        $page = self::getPageByType($type, $locale);
+        return $page?->url ?? $fallback;
+    }
+
 }
 

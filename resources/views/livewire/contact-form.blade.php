@@ -1,76 +1,17 @@
-<div>
-    @if (session()->has('message'))
-        <div class="mb-6 rounded-xl bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
-            {{ session('message') }}
-        </div>
-    @endif
-
-    @if (session()->has('error'))
-        <div class="mb-6 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    <form wire:submit.prevent="submitForm" class="flex flex-col gap-4">
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1">
-                <input
-                    wire:model="name"
-                    type="text"
-                    placeholder="{{ __('Jméno') }}"
-                    class="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm placeholder-gray-400 shadow-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition @error('name') border-red-400 @enderror"
-                >
-                @error('name') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-            </div>
-
-            <div class="flex flex-col gap-1">
-                <input
-                    wire:model="phone"
-                    type="text"
-                    placeholder="{{ __('Telefon') }}"
-                    class="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm placeholder-gray-400 shadow-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition @error('phone') border-red-400 @enderror"
-                >
-                @error('phone') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-1">
-            <input
-                wire:model="email"
-                type="email"
-                placeholder="{{ __('E-mail') }}"
-                class="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm placeholder-gray-400 shadow-sm focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition @error('email') border-red-400 @enderror"
-            >
-            @error('email') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-        </div>
-
-        <div class="flex flex-col gap-1">
-            <textarea
-                wire:model="message"
-                rows="5"
-                placeholder="{{ __('S čím můžeme pomoci?') }}"
-                class="rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm placeholder-gray-400 shadow-sm resize-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 outline-none transition @error('message') border-red-400 @enderror"
-            ></textarea>
-            @error('message') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
-        </div>
-
-        <div>
-            <button
-                type="submit"
-                class="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition disabled:opacity-60"
-                wire:loading.attr="disabled"
-            >
-                <span wire:loading.remove>{{ __('Odeslat') }}</span>
-                <span wire:loading class="flex items-center gap-2">
-                    <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                    </svg>
-                    {{ __('Odesílání...') }}
-                </span>
-            </button>
-        </div>
-
-    </form>
-</div>
+<form wire:submit="submitForm" class="bg-white rounded-2xl p-8 max-mobile:w-full max-mobile:min-w-0 border border-line shadow-[0_4px_24px_rgba(0,0,0,.06)]">
+    <div class="mb-7"><p class="font-bold tracking-label uppercase mb-1 text-10 text-muted">NAPIŠTE NÁM</p><h2 class="font-condensed font-black uppercase leading-tight m-0 text-34">JAK VÁM MŮŽEME POMOCI?</h2></div>
+    @if(session('message'))<p class="mb-4 rounded-lg bg-green-50 px-4 py-3 text-sm font-semibold text-success">{{ session('message') }}</p>@endif
+    @if(session('error'))<p class="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{{ session('error') }}</p>@endif
+    <div class="grid gap-4 mb-4 max-mobile:!grid-cols-1 grid-cols-[1fr_1fr]">
+        <label class="flex flex-col gap-1.5"><span class="text-xs font-bold tracking-nav uppercase text-muted">Jméno a příjmení *</span><input wire:model="name" autocomplete="name" class="px-4 py-3 rounded-lg text-sm outline-none transition-all border-[1.5px] border-[#ddd9d3] font-sans focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 focus:!border-orange-css focus:!outline focus:!outline-2 focus:!outline-orange-css focus:!outline-offset-1 focus:!shadow-none" required>@error('name')<span class="text-xs text-red-600">{{ $message }}</span>@enderror</label>
+        <label class="flex flex-col gap-1.5"><span class="text-xs font-bold tracking-nav uppercase text-muted">E-mail *</span><input wire:model="email" autocomplete="email" type="email" class="px-4 py-3 rounded-lg text-sm outline-none transition-all border-[1.5px] border-[#ddd9d3] font-sans focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 focus:!border-orange-css focus:!outline focus:!outline-2 focus:!outline-orange-css focus:!outline-offset-1 focus:!shadow-none" required>@error('email')<span class="text-xs text-red-600">{{ $message }}</span>@enderror</label>
+    </div>
+    <label class="flex flex-col gap-1.5 mb-4"><span class="text-xs font-bold tracking-nav uppercase text-muted">Předmět</span><select wire:model="subject" class="py-3 pl-4 pr-[2.6rem] rounded-lg text-sm outline-none appearance-none bg-no-repeat [background-position:right_1rem_center] [background-size:0.9rem] border-[1.5px] border-[#ddd9d3] font-sans text-nav-ink focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 focus:!border-orange-css focus:!outline focus:!outline-2 focus:!outline-orange-css focus:!outline-offset-1 focus:!shadow-none bg-[url('/assets/obrazky/select-chevron.svg')]">
+        <option>Obecný dotaz</option><option>Vstupenky</option><option>Partnerství</option><option>Média</option><option>Nábor hráčů</option>
+    </select>@error('subject')<span class="text-xs text-red-600">{{ $message }}</span>@enderror</label>
+    <label class="flex flex-col gap-1.5 mb-6"><span class="text-xs font-bold tracking-nav uppercase text-muted">Zpráva *</span><textarea wire:model="message" class="px-4 py-3 rounded-lg text-sm outline-none resize-none border-[1.5px] border-[#ddd9d3] font-sans focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 focus:!border-orange-css focus:!outline focus:!outline-2 focus:!outline-orange-css focus:!outline-offset-1 focus:!shadow-none" rows="5" required></textarea>@error('message')<span class="text-xs text-red-600">{{ $message }}</span>@enderror</label>
+    <div class="hidden" aria-hidden="true"><label>Web<input wire:model="website" type="text" tabindex="-1" autocomplete="off"></label></div>
+    <button class="w-full cursor-pointer inline-flex items-center justify-center gap-2 font-condensed font-black text-sm tracking-widest uppercase px-6 py-4 rounded-lg text-white [transition:background_0.2s_ease,color_0.2s_ease,box-shadow_0.2s_ease,transform_0.2s_ease] bg-orange hover:!bg-wine hover:!text-white hover:shadow-[0_8px_20px_rgba(106,27,33,.28)] hover:-translate-y-px focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 disabled:cursor-not-allowed disabled:opacity-60" type="submit" wire:loading.attr="disabled">
+        <span wire:loading.remove>ODESLAT ZPRÁVU <span aria-hidden="true" class="font-condensed text-[1.03rem] leading-none">›</span></span><span wire:loading>ODESÍLÁM…</span>
+    </button>
+</form>

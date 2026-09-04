@@ -11,9 +11,7 @@
         <meta name="keywords" content="{{ $seo['keywords'] }}">
     @endif
 
-    @if(!empty($seo['og_type']))
-        <meta property="og:type" content="{{ $seo['og_type'] }}">
-    @endif
+    <meta property="og:type" content="{{ $ogType ?? ($seo['og_type'] ?? 'website') }}">
 
     @if(!empty($seo['og_title']))
         <meta property="og:title" content="{{ $seo['og_title'] }}">

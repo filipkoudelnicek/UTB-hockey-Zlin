@@ -2,13 +2,17 @@
 
 namespace App\Filament\Pages;
 
+use App\Support\PasswordRequirements;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Html;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -50,13 +54,25 @@ class ChangePassword extends Page implements HasForms
                     ->password()
                     ->revealable()
                     ->required()
-                    ->minLength(8),
+                    ->live(debounce: 300)
+                    ->rules(PasswordRequirements::rules()),
 
                 TextInput::make('new_password_confirmation')
                     ->label('Potvrzení nového hesla')
                     ->password()
                     ->revealable()
-                    ->required(),
+                    ->required()
+                    ->same('new_password')
+                    ->live(debounce: 300),
+
+                Html::make(fn (Get $get): HtmlString => new HtmlString(view(
+                    'filament.forms.components.password-requirements',
+                    [
+                        'password' => $get('new_password'),
+                        'confirmation' => $get('new_password_confirmation'),
+                    ],
+                )->render()))
+                    ->columnSpanFull(),
             ])
             ->statePath('data');
     }

@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    'meta' => [
+        'app_id' => env('META_APP_ID'),
+        'app_secret' => env('META_APP_SECRET'),
+        'facebook_page_id' => env('META_FACEBOOK_PAGE_ID'),
+        'access_token' => env('META_ACCESS_TOKEN'),
+        'instagram_account_id' => env('META_INSTAGRAM_ACCOUNT_ID'),
+        'graph_version' => 'v25.0',
+        'cache_ttl' => 900,
+    ],
+
 ];

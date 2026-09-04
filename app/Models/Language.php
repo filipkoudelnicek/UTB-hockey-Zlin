@@ -19,6 +19,29 @@ class Language extends Model
         'is_default' => 'boolean',
     ];
 
+    public static function activeOptions(): array
+    {
+        return static::query()
+            ->where('active', true)
+            ->orderBy('name')
+            ->pluck('name', 'locale')
+            ->all();
+    }
+
+    public static function hasMultipleActive(): bool
+    {
+        return static::query()->where('active', true)->count() > 1;
+    }
+
+    public static function defaultActiveLocale(): ?string
+    {
+        return static::query()
+            ->where('active', true)
+            ->orderByDesc('is_default')
+            ->orderBy('name')
+            ->value('locale');
+    }
+
     protected static function boot(): void
     {
         parent::boot();

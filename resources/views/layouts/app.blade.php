@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html class="scroll-smooth motion-reduce:scroll-auto" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/favicon.ico">
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ \App\Models\Setting::get('favicon_updated_at', '1') }}" sizes="any">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     @yield('seo')
     <title>@yield('title') | {{ config('app.name') }}</title>
@@ -14,6 +17,16 @@
 
     @if(\App\Models\Setting::get('cookie_text'))
     <link rel="stylesheet" href="/assets/css/cookies.css">
+    {{-- Rozhodnutí o zobrazení lišty musí proběhnout synchronně před vykreslením, jinak by na okamžik bliklo --}}
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('cc_prefs') !== null) {
+                    document.documentElement.classList.add('cc-consent-set');
+                }
+            } catch (e) {}
+        })();
+    </script>
     @endif
 
     {{-- GA / GTM se načtou pouze po udělení souhlasu s analytickými cookies (viz cookie consent níže) --}}
@@ -25,10 +38,13 @@
     @endif
 </head>
 
-<body>
+<body class="m-0 min-h-screen bg-paper font-sans text-ink-css">
+    <a href="#main" class="fixed left-[.7rem] top-[.7rem] z-[9999] -translate-y-[180%] rounded-lg bg-white px-4 py-[.7rem] font-extrabold text-wine transition-transform duration-200 focus:translate-y-0 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3">Přeskočit na obsah</a>
     <x-header-menu />
 
-    @yield('content')
+    <main id="main">
+        @yield('content')
+    </main>
 
     <x-footer />
 

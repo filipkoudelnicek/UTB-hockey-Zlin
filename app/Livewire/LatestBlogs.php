@@ -15,7 +15,7 @@ class LatestBlogs extends Component
     public function mount()
     {
         $currentLanguage = LanguageService::getCurrentLanguage();
-        $this->latestArticles = ArticleService::getLatestArticles(2, $currentLanguage->locale);
+        $this->latestArticles = ArticleService::getLatestArticles(2, $currentLanguage?->locale ?? app()->getLocale());
     }
 
     /**

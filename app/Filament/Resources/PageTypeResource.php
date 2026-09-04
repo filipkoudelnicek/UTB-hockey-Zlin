@@ -15,9 +15,10 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PageTypeResource extends Resource
+class PageTypeResource extends AdminResource
 {
     protected static ?string $model = PageType::class;
+    protected static ?string $permissionKey = 'website.settings';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedSquares2x2;
     protected static ?string $navigationLabel   = 'Typy stránek';
@@ -25,6 +26,15 @@ class PageTypeResource extends Resource
     protected static ?string $pluralModelLabel  = 'Typy stránek';
     protected static string|\UnitEnum|null $navigationGroup = 'Správa webu';
     protected static ?int $navigationSort       = 2;
+
+    /**
+     * Typy stránek propojují Blade šablony a PHP schémata. Jsou určeny pro
+     * vývojáře; pro běžnou práci s obsahem slouží sekce Stránky.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $form): Schema
     {

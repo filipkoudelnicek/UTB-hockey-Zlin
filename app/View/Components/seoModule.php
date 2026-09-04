@@ -12,7 +12,7 @@ class SeoModule extends Component
     /**
      * Create a new component instance.
      */
-    public function __construct(public $seo)
+    public function __construct(public $seo, public string $type = 'website')
     {
         //
     }
@@ -23,7 +23,8 @@ class SeoModule extends Component
     public function render(): View|Closure|string
     {
         return view('components.seo-module')->with([
-        'ogImageUrl' => MediaService::getMediaFullUrl($this->seo['og_image'] ?? null),
-    ]);
+            'ogImageUrl' => MediaService::getMediaFullUrl($this->seo['og_image'] ?? null),
+            'ogType' => $this->type,
+        ]);
     }
 }

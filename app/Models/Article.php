@@ -2,71 +2,55 @@
 
 namespace App\Models;
 
+use App\Services\MediaService;
+use App\Services\UrlService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Article extends Model
 {
-    protected $casts = [
-        'content' => 'array',
-        'publish_time' => 'datetime',
-    ];
+    protected $casts = ['content'=>'array','publish_time'=>'datetime','active'=>'boolean'];
+    protected $fillable = ['slug','lang_locale','user_id','title','excerpt','category','featured_media_id','content','active','publish_time'];
 
-    protected $fillable = [
-        'slug',
-        'lang_locale',
-        'user_id',
-        'title',
-        'content',
-        'active',
-        'publish_time',
-    ];
+    public function language(): BelongsTo { return $this->belongsTo(Language::class, 'lang_locale', 'locale'); }
+    public function user(): BelongsTo { return $this->belongsTo(User::class); }
+    public function scopePublished(Builder $query): Builder { return $query->where('active',true)->where(fn(Builder $q)=>$q->whereNull('publish_time')->orWhere('publish_time','<=',now())); }
 
-    public function language()
+    public static function categoryOptions(): array
     {
-        return $this->belongsTo(Language::class, 'lang_locale', 'locale');
+        return [
+            'team' => 'A-tým',
+            'club' => 'Klub',
+            'interviews' => 'Rozhovory',
+            'fans' => 'Fanoušci',
+        ];
     }
 
-    public function user()
+    public static function categoryLabel(?string $category): string
     {
-        return $this->belongsTo(User::class);
+        return static::categoryOptions()[$category] ?? 'Ostatní';
     }
 
-    /**
-     * Scope: pouze aktivní a publikované články.
-     */
-    public function scopePublished(Builder $query): Builder
+    public static function categoryColor(?string $category): string
     {
-        return $query
-            ->where('active', true)
-            ->where(function (Builder $q) {
-                $q->whereNull('publish_time')
-                  ->orWhere('publish_time', '<=', now());
-            });
+        return match ($category) {
+            'team' => 'info',
+            'club' => 'success',
+            'interviews' => 'warning',
+            'fans' => 'primary',
+            default => 'gray',
+        };
     }
 
-    /**
-     * Absolute URL for this article.
-     * Blog-page slug je cachován per-locale staticky po dobu requestu.
-     */
     public function getUrlAttribute(): string
     {
-        static $blogSlugCache = [];
-
-        if (!isset($blogSlugCache[$this->lang_locale])) {
-            try {
-                $blogPage = Page::where('type', 'blog')
-                    ->where('lang_locale', $this->lang_locale)
-                    ->first();
-                $blogSlugCache[$this->lang_locale] = $blogPage?->full_slug ?? 'blog';
-            } catch (\Exception $e) {
-                $blogSlugCache[$this->lang_locale] = 'blog';
-            }
-        }
-
-        $defaultLocale = \App\Services\UrlService::getDefaultLocale();
-        $prefix = ($this->lang_locale !== $defaultLocale) ? '/' . $this->lang_locale : '';
-
-        return $prefix . '/' . $blogSlugCache[$this->lang_locale] . '/' . $this->slug;
+        $page = Page::active()->where('type','blog')->where('lang_locale',$this->lang_locale)->first();
+        $base = trim((string) ($page?->full_slug ?? $page?->slug ?? 'aktuality'), '/');
+        $prefix = $this->lang_locale !== UrlService::getDefaultLocale() ? '/'.$this->lang_locale : '';
+        return $prefix.'/'.trim($base.'/'.$this->slug, '/');
     }
+    public function getPlainTitleAttribute(): string { return trim(strip_tags(html_entity_decode((string) $this->title))); }
+    public function getFeaturedImageUrlAttribute(): ?string { return MediaService::getMediaUrl($this->featured_media_id); }
+    public function getBannerImageUrlAttribute(): ?string { return $this->featured_image_url; }
 }

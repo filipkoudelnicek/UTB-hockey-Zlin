@@ -73,7 +73,7 @@ class Page extends Model
      */
     public function getUrlAttribute(): string
     {
-        $fullSlug      = $this->full_slug ?? $this->computeFullSlug();
+        $fullSlug      = trim($this->full_slug ?? $this->computeFullSlug(), '/');
         $defaultLocale = \App\Services\UrlService::getDefaultLocale();
 
         if ($this->lang_locale === $defaultLocale) {

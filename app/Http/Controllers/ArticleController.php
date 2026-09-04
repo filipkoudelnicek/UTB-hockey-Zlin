@@ -2,37 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Article;
-use Illuminate\Http\Request;
+use App\Services\PageDataService;
 use App\Services\UrlService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 
 class ArticleController extends Controller
 {
-    protected $defaultLocale;
+    protected string $defaultLocale;
 
-    public function __construct()
+    public function __construct(private readonly PageDataService $pageData)
     {
         $this->defaultLocale = UrlService::getDefaultLocale();
     }
-    
-    public function showArticle(Request $request, $articleSlug)
+
+    public function showArticle(Request $request, string $articleSlug)
     {
         if (!Schema::hasTable('articles')) {
-            return redirect('/admin');
+            return redirect('/admin-utb');
         }
-        
         $locale = $request->route('locale') ?? $this->defaultLocale;
-        
-        try {
-            $article = Article::published()
-                ->where('slug', $articleSlug)
-                ->where('lang_locale', $locale)
-                ->firstOrFail();
-            
-            return view('pages.article-detail', compact('article'));
-        } catch (\Exception $e) {
-            abort(404);
-        }
+        return view('pages.article', $this->pageData->forArticle($articleSlug, $locale));
     }
 }

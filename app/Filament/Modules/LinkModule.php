@@ -67,7 +67,7 @@ class LinkModule
                                 return Article::where('active', 1)
                                     ->get()
                                     ->mapWithKeys(fn ($a) => [
-                                        $a->id => "[{$a->lang_locale}] {$a->title}",
+                                        $a->id => "[{$a->lang_locale}] {$a->plain_title}",
                                     ]);
                             }
 

@@ -3,6 +3,11 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\ChangePassword;
+use App\Filament\Auth\RootAppAuthentication;
+use App\Filament\Auth\RootEditProfile;
+use App\Filament\Auth\RootSetUpRequiredMultiFactorAuthentication;
+use App\Http\Middleware\EnsureRootMultiFactorAuthenticationIsEnabled;
+use App\Models\Setting;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -31,13 +36,20 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
+            ->path('admin-utb')
             ->login()
-            ->brandName('Condecio-CMS')
+            ->multiFactorAuthentication(
+                RootAppAuthentication::make(),
+                RootSetUpRequiredMultiFactorAuthentication::class,
+                isRequired: true,
+            )
+            ->multiFactorAuthenticationRequiredMiddlewareName(EnsureRootMultiFactorAuthenticationIsEnabled::class)
+            ->profile(RootEditProfile::class)
+            ->brandName('Codencio-CMS')
             ->colors([
                 'primary' => Color::hex('#7400ff'),
             ])
-            ->favicon(asset('/favicon.ico'))
+            ->favicon(asset('favicon.ico').'?v='.Setting::get('favicon_updated_at', '1'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -69,6 +81,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make('Obsah'),
+                NavigationGroup::make('Běžná správa'),
+                NavigationGroup::make('Sportovní nastavení'),
+                NavigationGroup::make('Přehledy'),
                 NavigationGroup::make('Správa webu'),
                 NavigationGroup::make('Nastavení'),
             ])

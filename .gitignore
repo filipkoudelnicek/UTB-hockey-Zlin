@@ -3,6 +3,12 @@
 /public/build
 /public/hot
 /public/storage
+/public/assets/obrazky
+!/public/assets/obrazky/
+/public/assets/obrazky/*
+!/public/assets/obrazky/header.webp
+!/public/assets/obrazky/article.webp
+!/public/assets/obrazky/player.webp
 /public/js/filament
 /public/js/awcodes
 /public/css/filament

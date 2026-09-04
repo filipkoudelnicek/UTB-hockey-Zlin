@@ -19,9 +19,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
-class PageRouteResource extends Resource
+class PageRouteResource extends AdminResource
 {
     protected static ?string $model = PageRoute::class;
+    protected static ?string $permissionKey = 'website.page_routes';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedMapPin;
     protected static ?string $navigationLabel  = 'Page Routes';
@@ -93,8 +94,10 @@ class PageRouteResource extends Resource
                     Grid::make(3)->schema([
                         Select::make('lang_locale')
                             ->label('Jazyk')
-                            ->options(fn () => Language::where('active', true)->pluck('name', 'locale'))
-                            ->nullable()
+                            ->options(fn () => Language::activeOptions())
+                            ->default(fn () => Language::defaultActiveLocale())
+                            ->hidden(fn () => ! Language::hasMultipleActive())
+                            ->dehydratedWhenHidden()
                             ->searchable()
                             ->placeholder('Výchozí jazyk')
                             ->helperText('Prázdné = výchozí jazyk (bez prefixu v URL).'),

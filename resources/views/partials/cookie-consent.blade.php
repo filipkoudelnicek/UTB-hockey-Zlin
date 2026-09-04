@@ -56,12 +56,12 @@
 </div>
 
 <button id="cc-toggle" title="Nastavení cookies" aria-label="Nastavení cookies">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#7400ff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f57800" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/>
-        <circle cx="8.5" cy="9" r="1.3" fill="#7400ff" stroke="none"/>
-        <circle cx="15" cy="8" r="1.3" fill="#7400ff" stroke="none"/>
-        <circle cx="15.5" cy="15" r="1.3" fill="#7400ff" stroke="none"/>
-        <circle cx="9" cy="15.5" r="1.3" fill="#7400ff" stroke="none"/>
+        <circle cx="8.5" cy="9" r="1.3" fill="#f57800" stroke="none"/>
+        <circle cx="15" cy="8" r="1.3" fill="#f57800" stroke="none"/>
+        <circle cx="15.5" cy="15" r="1.3" fill="#f57800" stroke="none"/>
+        <circle cx="9" cy="15.5" r="1.3" fill="#f57800" stroke="none"/>
     </svg>
 </button>
 

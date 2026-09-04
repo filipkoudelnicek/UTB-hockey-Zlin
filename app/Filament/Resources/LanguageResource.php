@@ -18,15 +18,16 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class LanguageResource extends Resource
+class LanguageResource extends AdminResource
 {
     protected static ?string $model = Language::class;
+    protected static ?string $permissionKey = 'website.languages';
 
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;
     protected static ?string $navigationLabel = 'Jazyky';
     protected static ?string $modelLabel = 'Jazyky';
     protected static ?string $pluralModelLabel = 'Jazyky';
-    protected static string|\UnitEnum|null $navigationGroup = 'Nastavení';
+    protected static string|\UnitEnum|null $navigationGroup = 'Správa webu';
     protected static ?int $navigationSort = 2;
 
     public static function form(Schema $form): Schema

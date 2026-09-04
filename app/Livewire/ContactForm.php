@@ -5,42 +5,63 @@ namespace App\Livewire;
 use App\Mail\ContactFormMail;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Mail;
-use Livewire\Attributes\Validate;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class ContactForm extends Component
 {
-    #[Validate('required|min:3')]
     public string $name = '';
-
-    #[Validate('required|email')]
     public string $email = '';
-
-    #[Validate('nullable')]
-    public string $phone = '';
-
-    #[Validate('required|min:20')]
+    public string $subject = 'Obecný dotaz';
     public string $message = '';
+    public string $website = '';
+    public int $startedAt;
 
-    public function submitForm()
+    public function mount(): void
     {
-        $validatedData = $this->validate();
+        $this->startedAt = time();
+    }
+
+    protected function rules(): array
+    {
+        return [
+            'name' => ['required','string','min:3','max:120'],
+            'email' => ['required','email:rfc','max:190'],
+            'subject' => ['required', Rule::in(['Obecný dotaz','Vstupenky','Partnerství','Média','Nábor hráčů'])],
+            'message' => ['required','string','min:10','max:5000'],
+            'website' => ['nullable','max:0'],
+        ];
+    }
+
+    public function submitForm(): void
+    {
+        $validated = $this->validate();
+
+        if ($this->website !== '' || time() - $this->startedAt < 2) {
+            $this->addError('message', 'Formulář se nepodařilo ověřit. Zkuste to prosím znovu.');
+            return;
+        }
+
+        $key = 'contact-form:'.request()->ip();
+        if (RateLimiter::tooManyAttempts($key, 5)) {
+            $this->addError('message', 'Odesíláte příliš mnoho zpráv. Zkuste to prosím později.');
+            return;
+        }
+        RateLimiter::hit($key, 600);
+
+        unset($validated['website']);
+        $recipient = Setting::get('contact_form_email') ?: Setting::get('site_email', config('mail.from.address'));
 
         try {
-            $recipient = Setting::get('site_email', config('mail.from.address'));
-
-            $mail = new ContactFormMail($validatedData);
-
-            $mailer = Mail::to($recipient);
-
-            $mailer->send($mail);
-
-            $this->reset(['name', 'email', 'phone', 'message']);
-
-            session()->flash('message', 'Děkujeme za Vaši zprávu. Brzy se Vám ozveme.');
-
-        } catch (\Exception $e) {
-            session()->flash('error', 'Nastal problém při odesílání. Zkuste to prosím později.');
+            Mail::to($recipient)->send(new ContactFormMail($validated));
+            $this->reset(['name','email','message']);
+            $this->subject = 'Obecný dotaz';
+            $this->startedAt = time();
+            session()->flash('message', 'Děkujeme! Zpráva byla úspěšně odeslána.');
+        } catch (\Throwable $e) {
+            report($e);
+            session()->flash('error', 'Zprávu se nepodařilo odeslat. Zkuste to prosím později.');
         }
     }
 

@@ -191,3 +191,65 @@ Komponenty lze vkládat do Blade šablon pomocí standardní Livewire syntaxe:
 ## Licence
 
 Tento projekt je licencován pod licencí [MIT](https://opensource.org/licenses/MIT).
+
+---
+
+## UTB RedBricks – rozšíření CMS
+
+Frontend v `_FRONTEND` je v projektu převedený na Blade/Tailwind šablony bez nahrazení původního CMS routingu.
+
+### Stránky a šablony
+
+Původní princip CMS zůstává zachovaný:
+
+- `Page` = konkrétní stránka, její slug a redakční obsah
+- `PageType` = typ stránky, Blade šablona a Filament schema
+- `PageRoute` = dynamická URL struktura spravovaná přes Route Builder
+- `Menu Manager` = navigace navázaná na vytvořené stránky
+
+RedBricks přidává typy/šablony:
+
+- Homepage (`pages.homepage`)
+- Zápasy (`pages.matches`)
+- Tým (`pages.team`)
+- Aktuality (`pages.blog`)
+- Klub (`pages.about`)
+- Kontakt (`pages.contact`)
+- původní Textová stránka zůstává dostupná
+
+Redakční obsah jednotlivých pohledů se upravuje ve **Stránky**. URL se nadále řídí slugem stránky a pravidly v **Page Routes**; nejsou napevno definované v `routes/web.php`.
+
+### Globální data mimo stránky
+
+Filament má navíc oddělené moduly:
+
+**Sport**
+- Zápasy
+- Hráči
+- Soupisky
+- Týmy
+- Soutěže
+- Sezóny
+- Ročníky soutěží
+- Stadiony
+- Tabulka (read-only, dopočítaná ze zápasů)
+- Statistiky hráčů (read-only přehled; editace zápasových statistik probíhá u zápasu)
+
+**Klub**
+- Partneři – globální, protože se používají na více stránkách
+
+FAQ, milníky, hodnoty a vedení klubu nejsou samostatné globální entity. Jsou součástí obsahu odpovídající stránky přes její PageType schema.
+
+### Sportovní logika
+
+- ligový zápas může patřit do `CompetitionSeason`
+- přátelský/přípravný zápas může mít `competition_season_id = null`
+- přátelské zápasy se nikdy nepočítají do ligové tabulky
+- tabulka se rekonstruuje ze zápasů podle bodování konkrétního ročníku soutěže
+- sezónní statistiky hráčů se odvozují z `MatchPlayerStat`
+- změna výsledku ligového zápasu přepočítá standings
+- `source` + `external_id` připravují sportovní entity na budoucí API synchronizaci
+
+### Dynamické URL
+
+Detail článku používá Route Builder route s vazbou na stránku typu `blog` a detail hráče obdobně na stránku typu `team`. Změna slugu hlavní stránky se tak promítne do veřejných URL bez hardcodování `/aktuality` nebo `/tym` ve frontendových šablonách.
