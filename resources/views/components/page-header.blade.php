@@ -14,6 +14,8 @@
         class="absolute inset-0 h-full w-full object-cover object-center"
         src="{{ $image ?: asset('assets/obrazky/header.webp') }}"
         alt=""
+        loading="eager"
+        fetchpriority="high"
     >
     <div class="absolute inset-0 [background:linear-gradient(90deg,rgba(51,10,14,.95),rgba(82,18,24,.68)_58%,rgba(31,8,10,.22))]"></div>
     <div class="relative z-[2] w-shell mx-auto pb-16">

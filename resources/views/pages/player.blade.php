@@ -60,6 +60,8 @@
                             alt="{{ $player->full_name }}"
                             class="relative z-10 block h-full w-full max-w-full object-contain object-bottom [filter:drop-shadow(0_18px_28px_rgba(0,0,0,.28))]"
                             src="{{ $portrait }}"
+                            loading="eager"
+                            fetchpriority="high"
                         >
                     </div>
                 </div>

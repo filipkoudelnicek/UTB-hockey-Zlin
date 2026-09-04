@@ -8,7 +8,7 @@
     <div class="w-shell mx-auto flex h-full items-center gap-10">
         <a href="{{ $homepageUrl }}" class="flex items-center gap-2 font-condensed text-17 font-extrabold leading-70 tracking-[.05em] text-wine no-underline focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3">
             @if($headerLogo = \App\Services\MediaService::getMediaUrl(\App\Models\Setting::get('header_logo_media_id')))
-                <img src="{{ $headerLogo }}" alt="" width="54" height="62" class="h-[62px] w-[54px] object-contain">
+                <img src="{{ $headerLogo }}" alt="" width="54" height="62" fetchpriority="high" class="h-[62px] w-[54px] object-contain">
             @endif
             <span>UTB<br><b class="text-[22px]">REDBRICKS</b></span>
         </a>

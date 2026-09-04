@@ -14,6 +14,8 @@
             <x-curator-glider
                 :media="data_get($page->content, 'hero.image')"
                 alt=""
+                loading="eager"
+                fetchpriority="high"
                 class="absolute inset-0 h-full w-full object-cover object-center opacity-64 [filter:grayscale(0.18)_brightness(0.92)_saturate(0.8)] [transform:scale(1.03)]"
             />
         @endif
