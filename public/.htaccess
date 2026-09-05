@@ -8,6 +8,26 @@
 
 
     # ----------------------------------------------------------
+    # Kanonická URL - odstranit interní WEDOS cestu
+    #
+    # /domains/utbhockey.cz/public/admin-utb
+    # -> /admin-utb
+    # ----------------------------------------------------------
+    RewriteCond %{THE_REQUEST} \s/+domains/utbhockey\.cz/public(?:/([^\s?]*))?(?:[?\s]) [NC]
+    RewriteRule ^ https://utbhockey.cz/%1 [R=301,L,NE]
+
+
+    # ----------------------------------------------------------
+    # Kanonická URL - odstranit /public
+    #
+    # /public/admin-utb
+    # -> /admin-utb
+    # ----------------------------------------------------------
+    RewriteCond %{THE_REQUEST} \s/+public(?:/([^\s?]*))?(?:[?\s]) [NC]
+    RewriteRule ^ https://utbhockey.cz/%1 [R=301,L,NE]
+
+
+    # ----------------------------------------------------------
     # Security headers
     # ----------------------------------------------------------
     <IfModule mod_headers.c>
@@ -19,16 +39,16 @@
 
     # ----------------------------------------------------------
     # Static asset cache
-    # Fonty se při nasazení nemění. Ostatní soubory mohou prohlížeče
-    # uchovat rok, ale bez immutable, aby šly při stejné URL obnovit.
     # ----------------------------------------------------------
     <IfModule mod_headers.c>
         <FilesMatch "\.woff2$">
             Header always set Cache-Control "public, max-age=31536000, immutable"
         </FilesMatch>
+
         <FilesMatch "\.(?:css|js)$">
             Header always set Cache-Control "public, max-age=31536000"
         </FilesMatch>
+
         <FilesMatch "\.(?:avif|gif|ico|jpe?g|png|svg|webp)$">
             Header always set Cache-Control "public, max-age=31536000"
         </FilesMatch>

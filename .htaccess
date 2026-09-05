@@ -16,7 +16,32 @@
 
 
     # ----------------------------------------------------------
-    # 3. Zakázat přístup ke skrytým souborům
+    # 3. Odstranit WEDOS cestu z veřejné URL
+    #
+    # /domains/utbhockey.cz/public/admin-utb
+    # -> /admin-utb
+    #
+    # THE_REQUEST zajistí, že se pravidlo spustí pouze tehdy,
+    # když tuto cestu skutečně obsahuje URL v prohlížeči.
+    # Interní přepis WEDOSu tím nerozbijeme.
+    # ----------------------------------------------------------
+    RewriteCond %{THE_REQUEST} \s/+domains/utbhockey\.cz/public(?:[/?\s]) [NC]
+    RewriteRule ^domains/utbhockey\.cz/public(?:/(.*))?$ /$1 [R=301,L,NE]
+
+
+    # ----------------------------------------------------------
+    # 4. Pokud někdo zadá /public přímo do URL,
+    #    přesměrovat na čistou adresu
+    #
+    # /public/admin-utb
+    # -> /admin-utb
+    # ----------------------------------------------------------
+    RewriteCond %{THE_REQUEST} \s/+public(?:[/?\s]) [NC]
+    RewriteRule ^public(?:/(.*))?$ /$1 [R=301,L,NE]
+
+
+    # ----------------------------------------------------------
+    # 5. Zakázat přístup ke skrytým souborům
     #    (.env, .git, .htpasswd atd.)
     #    .well-known ponecháváme kvůli SSL certifikátům
     # ----------------------------------------------------------
@@ -24,29 +49,22 @@
 
 
     # ----------------------------------------------------------
-    # 4. Defense-in-depth:
+    # 6. Defense-in-depth:
     #    zakázat Laravel interní adresáře
     # ----------------------------------------------------------
     RewriteRule ^(?:app|bootstrap|config|database|resources|routes|storage|tests|vendor)(?:/|$) - [F,L,NC]
 
 
     # ----------------------------------------------------------
-    # 5. Zakázat citlivé soubory v rootu Laravel projektu
+    # 7. Zakázat citlivé soubory v rootu Laravel projektu
     # ----------------------------------------------------------
     RewriteRule ^(?:artisan|composer\.(?:json|lock)|package(?:-lock)?\.json|phpunit\.xml|vite\.config\.(?:js|ts)|server\.php|README(?:\.md)?)(?:/|$) - [F,L,NC]
 
 
     # ----------------------------------------------------------
-    # 6. Pokud někdo zadá /public přímo do URL,
-    #    přesměrovat na čistou adresu
-    # ----------------------------------------------------------
-    RewriteCond %{THE_REQUEST} \s/+public(?:/([^\s?]*))? [NC]
-    RewriteRule ^public(?:/(.*))?$ /$1 [R=301,L,NE]
-
-
-    # ----------------------------------------------------------
-    # 7. Všechen normální provoz interně poslat do public/
+    # 8. Všechen normální provoz interně poslat do public/
     # ----------------------------------------------------------
     RewriteCond %{REQUEST_URI} !^/public/
     RewriteRule ^(.*)$ public/$1 [L]
+
 </IfModule>
