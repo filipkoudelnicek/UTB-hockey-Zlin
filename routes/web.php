@@ -9,6 +9,31 @@ use Illuminate\Support\Facades\Schema;
 
 /*
 |--------------------------------------------------------------------------
+| Údržba cache
+|--------------------------------------------------------------------------
+*/
+Route::get('/admin-utb/maintenance/optimize-clear', function () {
+    abort_unless(request()->user()?->isRoot(), 403);
+
+        try {
+        Artisan::call('optimize:clear');
+
+    return response()->json([
+            'message' => 'Optimalizacni cache byla vycistena.',
+    ])->header('Cache-Control', 'no-store');
+        } catch (\Throwable $exception) {
+        Log::error('Optimize clear through maintenance route failed.', [
+                'exception' => $exception,
+            ]);
+            return response()->json([
+                'message' => 'Prikaz se na serveru nepodarilo spustit.',
+                'error' => $exception->getMessage(),
+            ], 500);
+        }
+})->middleware(['auth', 'throttle:3,10']);
+
+/*
+|--------------------------------------------------------------------------
 | Sitemap — vždy statická
 |--------------------------------------------------------------------------
 */
