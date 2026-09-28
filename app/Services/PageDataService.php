@@ -211,6 +211,7 @@ class PageDataService
             PlayerPositionCategory::Goalkeeper->value => $players->filter(fn (Player $player) => $player->position?->category() === PlayerPositionCategory::Goalkeeper),
             PlayerPositionCategory::Defender->value => $players->filter(fn (Player $player) => $player->position?->category() === PlayerPositionCategory::Defender),
             PlayerPositionCategory::Forward->value => $players->filter(fn (Player $player) => $player->position?->category() === PlayerPositionCategory::Forward),
+            'unassigned' => $players->filter(fn (Player $player) => $player->position === null),
         ];
 
         return compact('competitionSeason', 'clubTeam', 'players', 'groups');

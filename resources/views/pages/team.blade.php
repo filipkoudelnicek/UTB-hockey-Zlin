@@ -27,6 +27,7 @@
                     ['goalkeeper', '01', 'BRANKÁŘI', false],
                     ['defender', '02', 'OBRÁNCI', true],
                     ['forward', '03', 'ÚTOČNÍCI', true],
+                    ['unassigned', '04', 'BEZ URČENÉ POZICE', true],
                 ])->filter(fn (array $section) => $groups[$section[0]]->isNotEmpty())->values();
             @endphp
 
