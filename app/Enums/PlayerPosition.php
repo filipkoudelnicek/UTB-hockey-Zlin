@@ -5,6 +5,8 @@ namespace App\Enums;
 enum PlayerPosition: string
 {
     case Goalkeeper = 'G';
+    case Defense = 'D';
+    case Attack = 'F';
     case Center = 'C';
     case RightWing = 'RW';
     case LeftWing = 'LW';
@@ -15,6 +17,8 @@ enum PlayerPosition: string
     {
         return match ($this) {
             self::Goalkeeper => 'Brankář',
+            self::Defense => 'Obrana',
+            self::Attack => 'Útok',
             self::Center => 'Centr',
             self::RightWing => 'Pravé křídlo',
             self::LeftWing => 'Levé křídlo',
@@ -35,8 +39,8 @@ enum PlayerPosition: string
     {
         return match ($this) {
             self::Goalkeeper => PlayerPositionCategory::Goalkeeper,
-            self::RightDefense, self::LeftDefense => PlayerPositionCategory::Defender,
-            self::Center, self::RightWing, self::LeftWing => PlayerPositionCategory::Forward,
+            self::Defense, self::RightDefense, self::LeftDefense => PlayerPositionCategory::Defender,
+            self::Attack, self::Center, self::RightWing, self::LeftWing => PlayerPositionCategory::Forward,
         };
     }
 
