@@ -14,7 +14,7 @@
 @section('content')
     @php
         $portrait = $player->portrait_url ?: asset('assets/obrazky/player.webp');
-        $heading = $player->profile_heading ?: 'SRDCAŘ A LÍDR.';
+        $heading = $player->profile_heading ?: 'HRÁČ UTB REDBRICKS.';
         $parts = preg_split('/\s+/', trim($heading));
         $last = array_pop($parts);
         $first = implode(' ', $parts);
