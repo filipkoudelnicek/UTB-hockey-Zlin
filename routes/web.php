@@ -2,58 +2,9 @@
 
 use App\Models\PageRoute;
 use App\Services\UrlService;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
-
-/*
-|--------------------------------------------------------------------------
-| Údržba cache
-|--------------------------------------------------------------------------
-*/
-Route::get('/admin-utb/maintenance/optimize-clear', function () {
-    abort_unless(request()->user()?->isRoot(), 403);
-
-        try {
-        Artisan::call('optimize:clear');
-
-    return response()->json([
-            'message' => 'Optimalizacni cache byla vycistena.',
-    ])->header('Cache-Control', 'no-store');
-        } catch (\Throwable $exception) {
-        Log::error('Optimize clear through maintenance route failed.', [
-                'exception' => $exception,
-            ]);
-            return response()->json([
-                'message' => 'Prikaz se na serveru nepodarilo spustit.',
-                'error' => $exception->getMessage(),
-            ], 500);
-        }
-})->middleware(['auth', 'throttle:3,10']);
-
-Route::get('/admin-utb/maintenance/migrate', function () {
-    abort_unless(request()->user()?->isRoot(), 403);
-
-    try {
-        $exitCode = Artisan::call('migrate', ['--force' => true]);
-
-        return response()->json([
-            'message' => $exitCode === 0
-                ? 'Databázové migrace byly úspěšně spuštěny.'
-                : 'Spuštění databázových migrací skončilo chybou.',
-            'output' => Artisan::output(),
-        ], $exitCode === 0 ? 200 : 500)->header('Cache-Control', 'no-store');
-    } catch (\Throwable $exception) {
-        Log::error('Database migrations through maintenance route failed.', [
-            'exception' => $exception,
-        ]);
-
-        return response()->json([
-            'message' => 'Migrace se na serveru nepodařilo spustit.',
-        ], 500)->header('Cache-Control', 'no-store');
-    }
-})->middleware(['auth', 'throttle:3,10']);
 
 /*
 |--------------------------------------------------------------------------
