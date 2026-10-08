@@ -181,8 +181,7 @@ class PageDataService
         if ($selectedCompetition) {
             $standings = CompetitionStanding::with('team')
                 ->where('competition_season_id', $selectedCompetition->id)
-                ->orderByDesc('points')
-                ->orderBy('team_id')
+                ->orderForTable()
                 ->get();
 
         }
@@ -247,8 +246,7 @@ class PageDataService
 
         $standings = CompetitionStanding::with('team')
             ->where('competition_season_id', $competitionSeason->id)
-            ->orderByDesc('points')
-            ->orderBy('team_id')
+            ->orderForTable()
             ->get();
 
         return [$competitionSeason, $standings];

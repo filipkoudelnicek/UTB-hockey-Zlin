@@ -9,6 +9,7 @@
                 <th class="w-[42px] px-4 py-4 text-center text-10 font-bold uppercase tracking-label text-white/50 max-mobile:!w-[1.9rem] max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">Z</th>
                 <th class="w-[42px] px-4 py-4 text-center text-10 font-bold uppercase tracking-label text-white/50 max-mobile:!w-[1.9rem] max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">V</th>
                 <th class="w-[42px] px-4 py-4 text-center text-10 font-bold uppercase tracking-label text-white/50 max-mobile:!w-[1.9rem] max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">P</th>
+                <th class="w-[68px] px-4 py-4 text-center text-10 font-bold uppercase tracking-label text-white/50 max-mobile:!w-[2.8rem] max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">Skóre</th>
                 <th class="w-[42px] px-4 py-4 text-center text-10 font-bold uppercase tracking-label text-white/50 max-mobile:!w-[1.9rem] max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">B</th>
             </tr>
         </thead>
@@ -38,12 +39,15 @@
                         </td>
                     @endforeach
                     <td class="px-4 py-3.5 text-center text-sm {{ $isClub ? 'font-black text-orange' : 'font-bold' }} max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">
+                        {{ $get('goals_for') }}:{{ $get('goals_against') }}
+                    </td>
+                    <td class="px-4 py-3.5 text-center text-sm {{ $isClub ? 'font-black text-orange' : 'font-bold' }} max-mobile:whitespace-nowrap max-mobile:!px-[0.3rem]">
                         {{ $get('points') }}
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="px-4 py-8 text-center text-sm text-muted">
+                    <td colspan="7" class="px-4 py-8 text-center text-sm text-muted">
                         Tabulka zatím nemá žádná data.
                     </td>
                 </tr>

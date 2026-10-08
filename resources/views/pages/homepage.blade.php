@@ -203,8 +203,11 @@
                                 <span class="rounded-full px-2.5 py-1 text-9 font-bold uppercase tracking-label {{ $clubWon ? 'bg-[rgba(34,197,94,0.15)] text-[#16a34a]' : ($isDraw ? 'bg-[rgba(245,120,0,0.14)] text-orange-css' : 'bg-[rgba(220,38,38,0.12)] text-[#dc2626]') }}">
                                     {{ $clubWon ? 'VÍTĚZSTVÍ' : ($isDraw ? 'REMÍZA' : 'PROHRA') }}
                                 </span>
-                            @elseif($lastMatch->reportArticle)
+                            @endif
+                            @if($lastMatch->reportArticle)
                                 <a href="{{ $lastMatch->reportArticle->url }}" class="font-condensed text-11 font-black uppercase tracking-label text-wine hover:text-orange">REPORT</a>
+                            @elseif($lastMatch->detail_url)
+                                <a href="{{ $lastMatch->detail_url }}" target="_blank" rel="noopener noreferrer" class="font-condensed text-11 font-black uppercase tracking-label text-wine hover:text-orange">DETAIL</a>
                             @endif
                         </div>
                     </article>

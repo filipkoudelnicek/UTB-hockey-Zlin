@@ -23,7 +23,7 @@
             <article wire:key="news-article-{{ $article->id }}" class="group {{ $loop->first ? 'overflow-hidden rounded-[28px] border border-line bg-white shadow-[0_5px_30px_rgba(0,0,0,.06)] md:col-span-2' : 'flex flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-[0_3px_20px_rgba(0,0,0,.05)]' }}">
                 @if($loop->first)
                     <a href="{{ $article->url }}" class="grid text-inherit no-underline md:grid-cols-[1.35fr_1fr]">
-                        <div class="h-[300px] overflow-hidden md:h-[420px]">
+                        <div class="overflow-hidden">
                             <img alt="{{ $article->plain_title }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" src="{{ $article->featured_image_url ?: asset('assets/obrazky/article.webp') }}">
                         </div>
                         <div class="flex flex-col justify-center p-8 md:p-10">

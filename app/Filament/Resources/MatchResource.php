@@ -90,13 +90,22 @@ class MatchResource extends AdminResource
                     ]),
                 ]),
                 Grid::make(2)->schema([
+                    Toggle::make('went_to_overtime')
+                        ->label('Zápas byl rozhodnut v prodloužení')
+                        ->default(false),
                     Select::make('venue_id')
                         ->label('Stadion')
                         ->options(fn () => Venue::orderBy('name')->pluck('name', 'id'))
                         ->searchable()
                         ->nullable()
                         ->visible(fn (Get $get): bool => filled($get('home_team_id'))),
+                ]),
+                Grid::make(2)->schema([
                     Select::make('report_article_id')->label('Report článek')->options(fn () => Article::orderByDesc('publish_time')->get()->mapWithKeys(fn (Article $article) => [$article->id => $article->plain_title]))->searchable()->nullable(),
+                    TextInput::make('detail_url')
+                        ->label('Odkaz na detail zápasu')
+                        ->url()
+                        ->maxLength(2048),
                 ]),
             ])->columns(1),
 

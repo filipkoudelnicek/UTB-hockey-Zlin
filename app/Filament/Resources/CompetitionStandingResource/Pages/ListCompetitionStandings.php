@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Utilities\Get;
 use Illuminate\Validation\ValidationException;
 
 class ListCompetitionStandings extends ListRecords
@@ -19,7 +20,7 @@ class ListCompetitionStandings extends ListRecords
 
     public function getSubheading(): ?string
     {
-        return 'Pořadí se řadí podle bodů a počet zápasů se počítá z výher a proher.';
+        return 'Skóre UTB se počítá z ligových zápasů. Ostatní týmy mají vstřelené a inkasované branky zadané ručně.';
     }
 
     protected function getHeaderActions(): array
@@ -39,10 +40,40 @@ class ListCompetitionStandings extends ListRecords
                         ->label('Tým')
                         ->options(fn () => Team::active()->orderBy('name')->pluck('name', 'id'))
                         ->searchable()
+                        ->live()
                         ->required(),
-                    TextInput::make('wins')->label('Výhry (V)')->numeric()->minValue(0)->default(0)->required(),
-                    TextInput::make('losses')->label('Prohry (P)')->numeric()->minValue(0)->default(0)->required(),
-                    TextInput::make('points')->label('Body (B)')->numeric()->default(0)->required(),
+                    TextInput::make('wins')
+                        ->label('Výhry (V)')
+                        ->numeric()
+                        ->minValue(0)
+                        ->default(0)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
+                    TextInput::make('losses')
+                        ->label('Prohry (P)')
+                        ->numeric()
+                        ->minValue(0)
+                        ->default(0)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
+                    TextInput::make('goals_for')
+                        ->label('VB')
+                        ->numeric()
+                        ->minValue(0)
+                        ->maxValue(65535)
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
+                    TextInput::make('goals_against')
+                        ->label('IB')
+                        ->numeric()
+                        ->minValue(0)
+                        ->maxValue(65535)
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
+                    TextInput::make('points')
+                        ->label('Body (B)')
+                        ->numeric()
+                        ->default(0)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
                 ])
                 ->action(function (array $data): void {
                     if (CompetitionStanding::query()
@@ -52,6 +83,14 @@ class ListCompetitionStandings extends ListRecords
                         throw ValidationException::withMessages([
                             'team_id' => 'Tento tým už v tabulce vybraného ročníku je.',
                         ]);
+                    }
+
+                    if ((int) $data['team_id'] === (int) Team::club()?->getKey()) {
+                        $data['wins'] = 0;
+                        $data['losses'] = 0;
+                        $data['points'] = 0;
+                        $data['goals_for'] = null;
+                        $data['goals_against'] = null;
                     }
 
                     CompetitionStanding::create($data);

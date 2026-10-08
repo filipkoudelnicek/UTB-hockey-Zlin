@@ -123,6 +123,13 @@
                                         class="inline-flex min-w-[130px] items-center justify-center rounded-lg border-2 border-wine px-5 py-3 font-condensed text-sm font-black uppercase tracking-widest text-wine no-underline transition-all hover:bg-wine hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 max-mobile:w-full"
                                         href="{{ $match->reportArticle->url }}"
                                     >REPORT</a>
+                                @elseif($past && $match->detail_url)
+                                    <a
+                                        class="inline-flex min-w-[130px] items-center justify-center rounded-lg border-2 border-wine px-5 py-3 font-condensed text-sm font-black uppercase tracking-widest text-wine no-underline transition-all hover:bg-wine hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 max-mobile:w-full"
+                                        href="{{ $match->detail_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >DETAIL</a>
                                 @else
                                     <span class="min-w-[130px]"></span>
                                 @endif

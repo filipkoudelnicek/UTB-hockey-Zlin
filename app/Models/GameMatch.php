@@ -18,12 +18,13 @@ class GameMatch extends Model
     protected $table = 'matches';
     protected $fillable = [
         'competition_season_id', 'match_type', 'played_at', 'venue_id', 'home_team_id', 'away_team_id',
-        'status', 'home_score', 'away_score', 'ticket_url', 'report_article_id', 'source', 'external_id',
+        'status', 'home_score', 'away_score', 'went_to_overtime', 'detail_url', 'ticket_url', 'report_article_id', 'source', 'external_id',
     ];
     protected $casts = [
         'played_at' => 'datetime',
         'match_type' => MatchType::class,
         'status' => MatchStatus::class,
+        'went_to_overtime' => 'boolean',
     ];
 
     public function competitionSeason(): BelongsTo { return $this->belongsTo(CompetitionSeason::class); }

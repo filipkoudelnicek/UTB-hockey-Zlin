@@ -22,7 +22,7 @@ class CompetitionSeason extends Model
     public function competition(): BelongsTo { return $this->belongsTo(Competition::class); }
     public function teams(): BelongsToMany { return $this->belongsToMany(Team::class)->withPivot('sort_order')->withTimestamps()->orderByPivot('sort_order'); }
     public function matches(): HasMany { return $this->hasMany(GameMatch::class); }
-    public function standings(): HasMany { return $this->hasMany(CompetitionStanding::class)->orderByDesc('points')->orderBy('team_id'); }
+    public function standings(): HasMany { return $this->hasMany(CompetitionStanding::class)->orderForTable(); }
 
     public function scopeActive(Builder $query): Builder
     {
