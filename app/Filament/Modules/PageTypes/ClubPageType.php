@@ -25,7 +25,6 @@ class ClubPageType
                 HighlightedTextInput::make('content.story.heading')->label('Nadpis')->legacy('content.story.title', 'content.story.accent')->required(),
                 Textarea::make('content.story.lead')->label('Úvodní text')->rows(4)->required()->columnSpanFull(),
                 Textarea::make('content.story.text')->label('Navazující text')->rows(5)->required()->columnSpanFull(),
-                CuratorPicker::make('content.story.image')->label('Obrázek příběhu')->required(),
             ])->description('Hlavní vyprávění o klubu a ilustrační obrázek.')->icon(Heroicon::OutlinedBookOpen)->iconColor('primary')->columns(2),
             Section::make('Milníky')->schema([
                 TextInput::make('content.milestones_eyebrow')->label('Krátký text nad nadpisem')->required(),
@@ -51,7 +50,7 @@ class ClubPageType
                     TextInput::make('name')->label('Jméno')->required(),
                     TextInput::make('position')->label('Pozice')->required(),
                     TextInput::make('email')->label('E-mail')->email(),
-                    CuratorPicker::make('photo')->label('Fotka')->required(),
+                    CuratorPicker::make('photo')->label('Fotka'),
                 ])->columns(2)->reorderable()->columnSpanFull(),
             ])->description('Lidé vedení klubu a jejich kontaktní údaje.')->icon(Heroicon::OutlinedUserGroup)->iconColor('primary')->columns(2),
         ];
