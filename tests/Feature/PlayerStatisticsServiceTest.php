@@ -39,5 +39,60 @@ class PlayerStatisticsServiceTest extends TestCase
         $this->assertSame(2,$roundStats['games']);
         $this->assertSame(3,$roundStats['goals']);
         $this->assertSame(5,$roundStats['points']);
+
+        $playerRows = Player::query()->withAggregatedMatchStats()->get();
+
+        $this->assertCount(1, $playerRows);
+        $this->assertSame(1, Player::query()->withAggregatedMatchStats()->count());
+        $this->assertSame(2, (int) $playerRows->first()->games);
+        $this->assertSame(3, (int) $playerRows->first()->goals);
+        $this->assertSame(2, (int) $playerRows->first()->assists);
+        $this->assertSame(3, (int) $playerRows->first()->plus_minus);
+
+        $nextSeason = CompetitionSeason::create([
+            'competition_id' => $competition->id,
+            'name' => 'Liga 27/28',
+            'status' => 'upcoming',
+            'starts_at' => '2027-08-01',
+            'ends_at' => '2028-05-31',
+        ]);
+        $nextSeasonMatch = GameMatch::create([
+            'competition_season_id' => $nextSeason->id,
+            'match_type' => MatchType::League,
+            'played_at' => '2027-09-01 18:00:00',
+            'home_team_id' => $club->id,
+            'away_team_id' => $opponent->id,
+            'status' => MatchStatus::Finished,
+            'home_score' => 3,
+            'away_score' => 2,
+        ]);
+        MatchPlayerStat::create([
+            'match_id' => $nextSeasonMatch->id,
+            'player_id' => $player->id,
+            'team_id' => $club->id,
+            'played' => true,
+            'goals' => 3,
+            'assists' => 1,
+            'plus_minus' => 1,
+        ]);
+
+        $allSeasonRows = Player::query()->withAggregatedMatchStats()->get();
+
+        $this->assertCount(1, $allSeasonRows);
+        $this->assertSame(3, (int) $allSeasonRows->first()->games);
+        $this->assertSame(6, (int) $allSeasonRows->first()->goals);
+        $this->assertSame(3, (int) $allSeasonRows->first()->assists);
+        $this->assertSame(4, (int) $allSeasonRows->first()->plus_minus);
+
+        $seasonRows = Player::query()
+            ->withAggregatedMatchStats()
+            ->where('competition_seasons.id', $nextSeason->id)
+            ->get();
+
+        $this->assertCount(1, $seasonRows);
+        $this->assertSame(1, (int) $seasonRows->first()->games);
+        $this->assertSame(3, (int) $seasonRows->first()->goals);
+        $this->assertSame(1, (int) $seasonRows->first()->assists);
+        $this->assertSame(4, (int) $seasonRows->first()->points);
     }
 }

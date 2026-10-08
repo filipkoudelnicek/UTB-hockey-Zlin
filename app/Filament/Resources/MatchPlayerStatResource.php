@@ -3,45 +3,97 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\MatchPlayerStatResource\Pages;
-use App\Models\MatchPlayerStat;
-use Filament\Resources\Resource;
-use Filament\Tables\Columns\IconColumn;
+use App\Models\Competition;
+use App\Models\CompetitionSeason;
+use App\Models\Player;
+use App\Models\Team;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class MatchPlayerStatResource extends AdminResource
 {
-    protected static ?string $model = MatchPlayerStat::class;
+    protected static ?string $model = Player::class;
+
     protected static ?string $permissionKey = 'reports.view';
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-presentation-chart-line';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Přehledy';
+
     protected static ?string $navigationLabel = 'Statistiky hráčů';
+
     protected static ?string $modelLabel = 'Statistika hráče';
+
     protected static ?string $pluralModelLabel = 'Statistiky hráčů';
+
     protected static ?int $navigationSort = 2;
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('match.played_at')->label('Datum')->dateTime('d.m.Y H:i')->sortable(),
-                TextColumn::make('player.last_name')->label('Hráč')->formatStateUsing(fn ($state, $record) => $record->player?->full_name ?? '—')->searchable(),
-                TextColumn::make('team.short_name')->label('Tým'),
-                IconColumn::make('played')->label('Nastoupil')->boolean(),
-                TextColumn::make('goals')->label('G')->alignCenter(),
-                TextColumn::make('assists')->label('A')->alignCenter(),
-                TextColumn::make('points')->label('Body')->alignCenter()->getStateUsing(fn (MatchPlayerStat $record) => $record->goals + $record->assists),
-                TextColumn::make('plus_minus')->label('+/-')->alignCenter(),
+                TextColumn::make('full_name')
+                    ->label('Hráč')
+                    ->searchable(['players.first_name', 'players.last_name'])
+                    ->sortable(['players.last_name', 'players.first_name']),
+                TextColumn::make('competition_names')->label('Soutěž')->placeholder('Přátelské zápasy'),
+                TextColumn::make('season_names')->label('Sezóna')->placeholder('—'),
+                TextColumn::make('games')->label('Zápasy')->alignCenter()->sortable(),
+                TextColumn::make('goals')->label('G')->alignCenter()->sortable(),
+                TextColumn::make('assists')->label('A')->alignCenter()->sortable(),
+                TextColumn::make('points')->label('Body')->alignCenter()->sortable(),
+                TextColumn::make('plus_minus')->label('+/-')->alignCenter()->sortable(),
             ])
             ->filters([
-                SelectFilter::make('player_id')->label('Hráč')->relationship('player', 'last_name')->searchable()->preload(),
-                SelectFilter::make('team_id')->label('Tým')->relationship('team', 'name')->searchable()->preload(),
+                SelectFilter::make('id')
+                    ->label('Hráč')
+                    ->options(fn () => Player::query()->orderBy('last_name')->orderBy('first_name')->get()->mapWithKeys(fn (Player $player): array => [$player->id => $player->full_name]))
+                    ->searchable()
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        filled($data['value'] ?? null),
+                        fn (Builder $query): Builder => $query->where('players.id', $data['value']),
+                    )),
+                SelectFilter::make('competition_id')
+                    ->label('Soutěž')
+                    ->options(fn () => Competition::query()->orderBy('name')->pluck('name', 'id'))
+                    ->searchable()
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        filled($data['value'] ?? null),
+                        fn (Builder $query): Builder => $query->where('competitions.id', $data['value']),
+                    )),
+                SelectFilter::make('competition_season_id')
+                    ->label('Sezóna')
+                    ->options(fn () => CompetitionSeason::query()
+                        ->with('competition')
+                        ->orderByDesc('starts_at')
+                        ->get()
+                        ->mapWithKeys(fn (CompetitionSeason $season): array => [
+                            $season->id => ($season->competition?->name ? $season->competition->name.' — ' : '').$season->name,
+                        ]))
+                    ->searchable()
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        filled($data['value'] ?? null),
+                        fn (Builder $query): Builder => $query->where('competition_seasons.id', $data['value']),
+                    )),
+                SelectFilter::make('team_id')
+                    ->label('Tým')
+                    ->options(fn () => Team::query()->orderBy('name')->pluck('name', 'id'))
+                    ->searchable()
+                    ->query(fn (Builder $query, array $data): Builder => $query->when(
+                        filled($data['value'] ?? null),
+                        fn (Builder $query): Builder => $query->where('match_player_stats.team_id', $data['value']),
+                    )),
             ])
-            ->defaultSort('match_id', 'desc')
+            ->defaultSort('goals', 'desc')
             ->recordActions([])
             ->toolbarActions([]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return Player::query()->withAggregatedMatchStats();
     }
 
     public static function canCreate(): bool

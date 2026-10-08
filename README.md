@@ -233,7 +233,7 @@ Filament má navíc oddělené moduly:
 - Ročníky soutěží
 - Stadiony
 - Tabulka (read-only, dopočítaná ze zápasů)
-- Statistiky hráčů (read-only přehled; editace zápasových statistik probíhá u zápasu)
+- Statistiky hráčů (read-only souhrn po hráčích s filtrem soutěže a sezony; editace zápasových statistik probíhá u zápasu)
 
 **Klub**
 - Partneři – globální, protože se používají na více stránkách
