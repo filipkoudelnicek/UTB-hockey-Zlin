@@ -46,6 +46,8 @@
                         $past = $match->status === \App\Enums\MatchStatus::Finished;
                         $category = $past ? 'past' : 'next';
                         $competitionLabel = $match->competitionSeason?->competition?->short_name ?: $match->competitionSeason?->competition?->name ?: $match->match_type->label();
+                        $clubIsHome = $clubTeam && $match->home_team_id === $clubTeam->id;
+                        $clubIsAway = $clubTeam && $match->away_team_id === $clubTeam->id;
                         $clubWon = $past && $clubTeam && $match->involves($clubTeam) && (($match->home_team_id === $clubTeam->id && $match->home_score > $match->away_score) || ($match->away_team_id === $clubTeam->id && $match->away_score > $match->home_score));
                     @endphp
 
@@ -70,9 +72,16 @@
                                     <span class="mb-2 inline-block text-10 font-bold uppercase tracking-label {{ $past ? 'text-muted' : 'text-orange' }}">
                                         {{ $past ? 'ODEHRÁNO' : 'NADCHÁZEJÍCÍ' }} · {{ mb_strtoupper($competitionLabel) }}
                                     </span>
-                                    <b class="block text-sm font-semibold text-muted">
-                                        {{ $past ? '' : $match->played_at->format('H:i') . ' · ' }}{{ $match->venue?->name }}{{ $match->venue?->city ? ', ' . $match->venue->city : '' }}
-                                    </b>
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                        <b class="text-sm font-semibold text-muted">
+                                            {{ $past ? '' : $match->played_at->format('H:i') . ' · ' }}{{ $match->venue?->name }}{{ $match->venue?->city ? ', ' . $match->venue->city : '' }}
+                                        </b>
+                                        @if($clubIsHome || $clubIsAway)
+                                            <span class="inline-flex w-fit items-center rounded-md px-2.5 py-1 text-10 font-black uppercase tracking-widest {{ $clubIsHome ? 'bg-orange/10 text-wine ring-1 ring-inset ring-orange/25' : 'bg-paper text-nav-ink ring-1 ring-inset ring-line' }}">
+                                                {{ $clubTeam->name }} {{ $past ? 'HRÁLI' : 'HRAJE' }} {{ $clubIsHome ? 'DOMA' : 'VENKU' }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 <div class="mt-4 flex items-center gap-4 max-mobile:flex-wrap max-mobile:gap-y-[0.8rem]">
