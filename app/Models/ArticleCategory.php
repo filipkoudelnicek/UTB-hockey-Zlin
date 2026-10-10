@@ -11,7 +11,7 @@ class ArticleCategory extends Model
 
     public const KEY_REPORT = 'report';
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'is_active', 'is_filterable'];
 
     protected function casts(): array
     {

@@ -48,7 +48,7 @@ class ArticleCategoryResource extends AdminResource
                     Toggle::make('is_filterable')
                         ->label('Použít ve filtru')
                         ->default(true)
-                        ->helperText('Zobrazí kategorii ve filtru i po deaktivaci, pokud ji mají publikované články.'),
+                        ->helperText('Po vypnutí se kategorie nezobrazí ve filtru, ani když ji mají přiřazené publikované články.'),
                 ]),
             ]),
         ])->columns(1);
