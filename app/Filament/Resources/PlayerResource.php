@@ -20,6 +20,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 
@@ -127,6 +129,15 @@ class PlayerResource extends AdminResource
             TextColumn::make('captain_role')->label('Role')->formatStateUsing(fn ($state) => $state?->label() ?? $state),
             TextColumn::make('faculty')->label('Fakulta'),
             IconColumn::make('is_active')->boolean()->label('Aktivní'),
+        ])->filters([
+            SelectFilter::make('position')
+                ->label('Herní post')
+                ->options(PlayerPosition::options()),
+            TernaryFilter::make('is_active')
+                ->label('Zobrazení na webu')
+                ->trueLabel('Aktivní')
+                ->falseLabel('Skrytí')
+                ->placeholder('Všichni'),
         ])->recordActions([
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),

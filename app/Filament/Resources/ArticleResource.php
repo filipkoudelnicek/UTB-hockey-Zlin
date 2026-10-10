@@ -23,6 +23,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
@@ -105,7 +107,7 @@ class ArticleResource extends AdminResource
     public static function table(Table $table): Table
     {
         return $table->defaultSort('publish_time', 'desc')->columns([
-            TextColumn::make('title')->label('Název')->formatStateUsing(fn (Article $record): string => $record->plain_title)->searchable()->sortable(),
+            TextColumn::make('title')->label('Název')->formatStateUsing(fn (Article $record): string => $record->plain_title)->searchable(['title', 'slug', 'excerpt'])->sortable(),
             TextColumn::make('categories.name')
                 ->label('Kategorie')
                 ->badge()
@@ -113,6 +115,17 @@ class ArticleResource extends AdminResource
             TextColumn::make('publish_time')->label('Publikace')->dateTime('d.m.Y H:i')->placeholder('Ihned')->sortable(),
             TextColumn::make('user.name')->label('Autor'),
             ToggleColumn::make('active')->label('Aktivní'),
+        ])
+        ->filters([
+            SelectFilter::make('categories')
+                ->label('Kategorie')
+                ->relationship('categories', 'name')
+                ->searchable(),
+            TernaryFilter::make('active')
+                ->label('Publikování')
+                ->trueLabel('Aktivní')
+                ->falseLabel('Neaktivní')
+                ->placeholder('Všechny'),
         ])
         ->recordUrl(fn (Article $record) => static::getUrl('edit', ['record' => $record]))
         ->recordActions([

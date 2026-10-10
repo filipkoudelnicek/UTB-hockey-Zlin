@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Actions\SynchronizeMatchStatusesAction;
+use App\Enums\MatchStatus;
 use App\Enums\MatchType;
 use App\Filament\Resources\MatchResource\Pages;
 use App\Models\Article;
@@ -28,6 +29,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Validation\ClosureValidationRule;
 
@@ -212,24 +214,38 @@ class MatchResource extends AdminResource
             ->defaultSort('played_at', 'desc')
             ->columns([
                 TextColumn::make('played_at')->label('Datum')->dateTime('d.m.Y H:i')->sortable(),
-                TextColumn::make('homeTeam.short_name')->label('Domácí'),
+                TextColumn::make('homeTeam.short_name')->label('Domácí')->searchable(),
                 TextColumn::make('home_score')->label('Skóre')->formatStateUsing(fn ($state, $record) => $record->home_score !== null ? $record->home_score.' : '.$record->away_score : '—'),
-                TextColumn::make('awayTeam.short_name')->label('Hosté'),
+                TextColumn::make('awayTeam.short_name')->label('Hosté')->searchable(),
                 TextColumn::make('match_type')
                     ->label('Typ')
                     ->badge()
+                    ->searchable()
                     ->formatStateUsing(fn ($state) => $state?->label() ?? $state)
                     ->color(fn ($state): string => $state === MatchType::League ? 'info' : 'gray'),
                 TextColumn::make('status')
                     ->label('Stav')
                     ->badge()
+                    ->searchable()
                     ->formatStateUsing(fn ($state) => $state?->label() ?? $state)
                     ->color(fn ($state): string => match ($state?->value ?? $state) {
                         'live' => 'danger',
                         'finished' => 'success',
                         default => 'gray',
                     }),
-                TextColumn::make('competitionSeason.name')->label('Soutěž')->placeholder('Mimo soutěž'),
+                TextColumn::make('competitionSeason.name')->label('Soutěž')->placeholder('Mimo soutěž')->searchable(),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Stav')
+                    ->options(collect(MatchStatus::cases())->mapWithKeys(fn (MatchStatus $status): array => [$status->value => $status->label()])->all()),
+                SelectFilter::make('match_type')
+                    ->label('Typ zápasu')
+                    ->options(MatchType::options()),
+                SelectFilter::make('competition_season_id')
+                    ->label('Ročník soutěže')
+                    ->relationship('competitionSeason', 'name')
+                    ->searchable(),
             ])
             ->recordActions([
                 Actions\EditAction::make(),
