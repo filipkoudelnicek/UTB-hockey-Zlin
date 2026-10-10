@@ -3,7 +3,7 @@
 @section('title', $article->plain_title)
 
 @section('seo')
-    <x-seo-module :seo="$article->content['seo'] ?? []" type="article" />
+    <x-seo-module :seo="$article->seoWithDefaults()" type="article" />
 @endsection
 
 @section('content')
@@ -43,9 +43,9 @@
                 <div class="mb-8 flex items-center gap-4 max-mobile:flex-col">
                     <div class="flex shrink-0 flex-col items-center gap-3 max-mobile:flex-row">
                         <span class="text-xs font-bold uppercase tracking-label text-muted">SDÍLET</span>
-                        <a aria-label="Sdílet na Facebooku" class="flex h-9 w-9 items-center justify-center rounded-full bg-facebook text-sm font-bold text-white no-underline transition-all hover:scale-110 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none" href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($article->url) }}" target="_blank" rel="noopener">f</a>
-                        <a aria-label="Sdílet na X" class="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-sm font-bold text-white no-underline transition-all hover:scale-110 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none" href="https://twitter.com/intent/tweet?url={{ urlencode($article->url) }}&text={{ urlencode($article->plain_title) }}" target="_blank" rel="noopener">X</a>
-                        <button aria-label="Kopírovat odkaz" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 bg-orange p-0 text-sm font-bold text-white transition-all hover:scale-110 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none" data-copy-article-link="{{ $article->url }}" type="button">↗</button>
+                        <a aria-label="Sdílet na Facebooku" class="flex h-9 w-9 items-center justify-center rounded-full bg-facebook text-sm font-bold text-white no-underline transition-all hover:scale-110 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none" href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url($article->url)) }}" target="_blank" rel="noopener">f</a>
+                        <a aria-label="Sdílet na X" class="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-sm font-bold text-white no-underline transition-all hover:scale-110 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none" href="https://twitter.com/intent/tweet?url={{ urlencode(url($article->url)) }}&text={{ urlencode($article->plain_title) }}" target="_blank" rel="noopener">X</a>
+                        <button aria-label="Kopírovat odkaz" class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-0 bg-orange p-0 text-sm font-bold text-white transition-all hover:scale-110 focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none" data-copy-article-link="{{ url($article->url) }}" type="button">↗</button>
                     </div>
 
                     <div class="flex-1">

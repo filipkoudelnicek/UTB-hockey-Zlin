@@ -11,6 +11,7 @@ use App\Models\User;
 use Awcodes\Curator\Components\Forms\CuratorPicker;
 use Filament\Actions;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -73,6 +74,7 @@ class ArticleResource extends AdminResource
                 RichEditor::make('content.body')->label('Obsah článku')->columnSpanFull(),
             ])->columns(1),
             ...SeoModule::make(),
+            Hidden::make('content.seo.og_auto'),
         ])->columns(1);
     }
 

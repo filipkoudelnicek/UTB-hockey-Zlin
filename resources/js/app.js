@@ -34,14 +34,37 @@ document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
+  let toastTimer;
+  const showToast = (message, isError = false) => {
+    let toast = document.querySelector('[data-toast]');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.dataset.toast = '';
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      toast.className = 'fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-full px-5 py-3 text-sm font-bold text-white shadow-lg transition-opacity duration-300';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.toggle('bg-ink', !isError);
+    toast.classList.toggle('bg-wine', isError);
+    toast.style.opacity = '1';
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+  };
+
   document.querySelectorAll('[data-copy-article-link]').forEach((button) => {
     button.addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText(button.dataset.copyArticleLink || window.location.href);
+        const link = button.dataset.copyArticleLink || window.location.href;
+        await navigator.clipboard.writeText(new URL(link, window.location.origin).href);
         button.setAttribute('aria-label', 'Odkaz zkopírován');
+        showToast('Odkaz byl zkopírován do schránky');
         window.setTimeout(() => button.setAttribute('aria-label', 'Kopírovat odkaz'), 1800);
       } catch (error) {
         button.setAttribute('aria-label', 'Odkaz se nepodařilo zkopírovat');
+        showToast('Odkaz se nepodařilo zkopírovat', true);
+        window.setTimeout(() => button.setAttribute('aria-label', 'Kopírovat odkaz'), 1800);
       }
     });
   });
