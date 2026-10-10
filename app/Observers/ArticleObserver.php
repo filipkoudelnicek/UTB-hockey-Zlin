@@ -9,9 +9,16 @@ use Illuminate\Support\Facades\Schema;
 
 class ArticleObserver
 {
+    public function saving(Article $article): void
+    {
+        if ($article->publish_time === null) {
+            $article->publish_time = now();
+        }
+    }
+
     public function saved(Article $article): void
     {
-        if (!Schema::hasTable('articles')) {
+        if (! Schema::hasTable('articles')) {
             return;
         }
 
