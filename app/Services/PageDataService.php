@@ -53,11 +53,13 @@ class PageDataService
         $this->synchronizeMatchStatuses->execute();
 
         $article = Article::published()
+            ->with('categories')
             ->where('slug', $articleSlug)
             ->where('lang_locale', $locale)
             ->firstOrFail();
 
         $related = Article::published()
+            ->with('categories')
             ->where('lang_locale', $locale)
             ->whereKeyNot($article->id)
             ->orderByDesc('publish_time')
@@ -99,6 +101,7 @@ class PageDataService
         $lastMatch = $this->matchService->lastForClub($clubTeam);
 
         $articles = Article::published()
+            ->with('categories')
             ->where('lang_locale', $page->lang_locale)
             ->orderByDesc('publish_time')
             ->limit(3)

@@ -24,6 +24,8 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
@@ -53,7 +55,29 @@ class ArticleResource extends AdminResource
                         ->unique(ignoreRecord: true, modifyRuleUsing: function (Unique $rule, callable $get) {
                         return $rule->where('lang_locale', $get('lang_locale'))->where('slug', $get('slug'));
                     }),
-                    Select::make('category')->label('Kategorie')->options(Article::categoryOptions())->default('team')->required(),
+                    Select::make('categories')
+                        ->label('Kategorie')
+                        ->relationship(
+                            titleAttribute: 'name',
+                            modifyQueryUsing: function (Builder $query, Select $component): Builder {
+                                $selectedCategoryIds = Arr::wrap($component->getState());
+
+                                return $query->where(fn (Builder $query) => $query
+                                    ->where('is_active', true)
+                                    ->when(
+                                        $selectedCategoryIds !== [],
+                                        fn (Builder $query) => $query->orWhereIn(
+                                            $query->getModel()->getQualifiedKeyName(),
+                                            $selectedCategoryIds,
+                                        ),
+                                    ));
+                            },
+                        )
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->helperText('Lze přiřadit pouze aktivní kategorie. Již přiřazené neaktivní kategorie zůstávají zachované.')
+                        ->required(),
                     Select::make('lang_locale')
                         ->label('Jazyk')
                         ->options(fn () => Language::activeOptions())
@@ -82,11 +106,10 @@ class ArticleResource extends AdminResource
     {
         return $table->defaultSort('publish_time', 'desc')->columns([
             TextColumn::make('title')->label('Název')->formatStateUsing(fn (Article $record): string => $record->plain_title)->searchable()->sortable(),
-            TextColumn::make('category')
+            TextColumn::make('categories.name')
                 ->label('Kategorie')
                 ->badge()
-                ->formatStateUsing(fn (?string $state): string => Article::categoryLabel($state))
-                ->color(fn (?string $state): string => Article::categoryColor($state)),
+                ->separator(','),
             TextColumn::make('publish_time')->label('Publikace')->dateTime('d.m.Y H:i')->placeholder('Ihned')->sortable(),
             TextColumn::make('user.name')->label('Autor'),
             ToggleColumn::make('active')->label('Aktivní'),

@@ -7,12 +7,13 @@ use App\Services\UrlService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 class Article extends Model
 {
     protected $casts = ['content'=>'array','publish_time'=>'datetime','active'=>'boolean'];
-    protected $fillable = ['slug','lang_locale','user_id','title','excerpt','category','featured_media_id','content','active','publish_time'];
+    protected $fillable = ['slug','lang_locale','user_id','title','excerpt','featured_media_id','content','active','publish_time'];
 
     protected static function booted(): void
     {
@@ -61,33 +62,8 @@ class Article extends Model
 
     public function language(): BelongsTo { return $this->belongsTo(Language::class, 'lang_locale', 'locale'); }
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
+    public function categories(): BelongsToMany { return $this->belongsToMany(ArticleCategory::class, 'article_category'); }
     public function scopePublished(Builder $query): Builder { return $query->where('active',true)->where(fn(Builder $q)=>$q->whereNull('publish_time')->orWhere('publish_time','<=',now())); }
-
-    public static function categoryOptions(): array
-    {
-        return [
-            'team' => 'A-tým',
-            'club' => 'Klub',
-            'interviews' => 'Rozhovory',
-            'fans' => 'Fanoušci',
-        ];
-    }
-
-    public static function categoryLabel(?string $category): string
-    {
-        return static::categoryOptions()[$category] ?? 'Ostatní';
-    }
-
-    public static function categoryColor(?string $category): string
-    {
-        return match ($category) {
-            'team' => 'info',
-            'club' => 'success',
-            'interviews' => 'warning',
-            'fans' => 'primary',
-            default => 'gray',
-        };
-    }
 
     public function getUrlAttribute(): string
     {

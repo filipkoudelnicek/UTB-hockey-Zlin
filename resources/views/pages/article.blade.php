@@ -21,10 +21,12 @@
                     <span>{{ $article->plain_title }}</span>
                 </nav>
 
-                <p class="mb-4 flex items-center gap-2.5 text-11 font-bold uppercase tracking-eyebrow text-orange">
-                    <span class="block h-[3px] w-6 bg-current"></span>
-                    {{ mb_strtoupper(\App\Models\Article::categoryLabel($article->category)) }}
-                </p>
+                @if($article->categories->isNotEmpty())
+                    <p class="mb-4 flex items-center gap-2.5 text-11 font-bold uppercase tracking-eyebrow text-orange">
+                        <span class="block h-[3px] w-6 bg-current"></span>
+                        {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}
+                    </p>
+                @endif
 
                 <h1 class="mb-6 font-condensed text-article-title font-black uppercase leading-95">
                     <x-highlighted-text :value="$article->title" accent-class="block text-orange-css" />

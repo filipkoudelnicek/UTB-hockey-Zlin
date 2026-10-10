@@ -2,18 +2,18 @@
     @if($categories->isNotEmpty())
         <div class="mb-10 flex flex-wrap gap-2">
             <button
-                class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $category === 'all' ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
+                class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $categoryId === null ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
                 type="button"
-                wire:click="selectCategory('all')"
+                wire:click="selectCategory(null)"
             >Vše</button>
 
-            @foreach($categories as $filterCategory => $filterLabel)
+            @foreach($categories as $filterCategory)
                 <button
-                    class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $category === $filterCategory ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
+                    class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $categoryId === $filterCategory->id ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
                     type="button"
-                    wire:click="selectCategory(@js($filterCategory))"
-                    wire:key="news-category-{{ $loop->index }}"
-                >{{ $filterLabel }}</button>
+                    wire:click="selectCategory({{ $filterCategory->id }})"
+                    wire:key="news-category-{{ $filterCategory->id }}"
+                >{{ $filterCategory->name }}</button>
             @endforeach
         </div>
     @endif
@@ -28,7 +28,7 @@
                         </div>
                         <div class="flex flex-col justify-center p-8 md:p-10">
                             <p class="mb-4 mt-0 text-10 font-extrabold uppercase tracking-meta text-muted">
-                                {{ optional($article->publish_time)->format('d. m. Y') }} · {{ mb_strtoupper(\App\Models\Article::categoryLabel($article->category)) }}
+                                {{ optional($article->publish_time)->format('d. m. Y') }}@if($article->categories->isNotEmpty()) · {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}@endif
                             </p>
                             <h2 class="m-0 font-condensed text-[clamp(2.2rem,4vw,4rem)] font-black uppercase leading-95 text-ink-css">{{ $article->plain_title }}</h2>
                             @if($article->excerpt)
@@ -46,7 +46,7 @@
                         </div>
                         <div class="flex flex-1 flex-col p-6">
                             <p class="mb-3 mt-0 text-10 font-extrabold uppercase tracking-meta text-muted">
-                                {{ optional($article->publish_time)->format('d. m. Y') }} · {{ mb_strtoupper(\App\Models\Article::categoryLabel($article->category)) }}
+                                {{ optional($article->publish_time)->format('d. m. Y') }}@if($article->categories->isNotEmpty()) · {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}@endif
                             </p>
                             <h2 class="m-0 flex-1 font-condensed text-28 font-black uppercase leading-[1.05] text-ink-css">{{ $article->plain_title }}</h2>
                             <span class="mt-5 inline-flex items-center gap-2 text-11 font-black uppercase tracking-meta text-orange [transition:color_0.2s_ease,gap_0.2s_ease] group-hover:gap-3 motion-reduce:!transition-none">

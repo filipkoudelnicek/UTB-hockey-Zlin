@@ -630,7 +630,7 @@
                         </div>
                         <div class="flex flex-1 flex-col px-[1.2rem] pb-[1.1rem] pt-[1.3rem]">
                             <p class="mb-[0.7rem] mx-0 mt-0 text-[.62rem] font-extrabold uppercase tracking-meta text-muted">
-                                {{ optional($article->publish_time)->format('d. m. Y') }} · {{ mb_strtoupper($article->category) }}
+                                {{ optional($article->publish_time)->format('d. m. Y') }}@if($article->categories->isNotEmpty()) · {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}@endif
                             </p>
                             <h3 class="m-0 flex-1 font-condensed text-[1.7rem] uppercase leading-[1.05] tracking-[-.04em] text-ink-css">
                                 {{ $article->plain_title }}

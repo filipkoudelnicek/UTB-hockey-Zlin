@@ -21,7 +21,7 @@ Moderní, vícejazyčný CMS systém postavený na **Laravel 13**, **Filament 5*
 | Oblast | Popis |
 |---|---|
 | **Stránky** | Správa stránek se slugy, blocky obsahu, typy stránek a vícejazyčnou podporou |
-| **Články / Blog** | Správa článků s plánovaným publikováním, přiřazením autora a URL generováním |
+| **Články / Blog** | Správa článků a kategorií, filtrování aktualit, plánované publikování a URL generování |
 | **Jazyky** | Vícejazyčný obsah, nastavení výchozího jazyka |
 | **Route Builder** | Dynamické URL trasy uložené v databázi, přiřazení šablony a controlleru |
 | **Menu Manager** | Drag-and-drop správa navigačních menu pro každý jazyk |
@@ -136,7 +136,7 @@ Administrace je dostupná na **/admin** a obsahuje:
 
 ### Obsah
 - **Stránky** — vytváření, úprava a mazání stránek s vícejazyčnou podporou
-- **Články** — správa blogu s plánovaným publikováním a přiřazením autora
+- **Články a kategorie** — správa kategorií, přiřazení více kategorií článku a filtrování aktualit podle kategorie
 - **Média** — nahrávání a správa souborů (Filament Curator)
 
 ### Navigace

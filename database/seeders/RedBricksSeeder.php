@@ -7,6 +7,7 @@ use App\Enums\CaptainRole;
 use App\Enums\MatchType;
 use App\Enums\PlayerPosition;
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\Competition;
 use App\Models\CompetitionSeason;
 use App\Models\CompetitionStanding;
@@ -158,10 +159,16 @@ class RedBricksSeeder extends Seeder
             ['letni-trenink-zacal','Letní trénink začal. Sezóna se blíží','team','2026-08-14','Tým zahájil společnou přípravu na nový ročník.'],
             ['stadion-se-pripravuje','Stadion se připravuje na nový ročník','club','2026-08-08','CCM Aréna se chystá na další sezonu univerzitního hokeje.'],
         ];
-        foreach($rows as [$slug,$title,$category,$date,$excerpt]) Article::updateOrCreate(['slug'=>$slug,'lang_locale'=>'cs'],[
-            'user_id'=>$user?->id,'title'=>$title,'excerpt'=>$excerpt,'category'=>$category,'active'=>true,'publish_time'=>$date.' 12:00:00',
-            'content'=>['body'=>'<p>'.$excerpt.'</p><p>Sledujte další informace a novinky z klubu UTB RedBricks.</p>'],
-        ]);
+        $categories = collect(['team' => 'A-tým', 'club' => 'Klub', 'matches' => 'Zápasy'])
+            ->map(fn (string $name) => ArticleCategory::firstOrCreate(['name' => $name]));
+
+        foreach($rows as [$slug,$title,$category,$date,$excerpt]) {
+            $article = Article::updateOrCreate(['slug'=>$slug,'lang_locale'=>'cs'],[
+                'user_id'=>$user?->id,'title'=>$title,'excerpt'=>$excerpt,'active'=>true,'publish_time'=>$date.' 12:00:00',
+                'content'=>['body'=>'<p>'.$excerpt.'</p><p>Sledujte další informace a novinky z klubu UTB RedBricks.</p>'],
+            ]);
+            $article->categories()->sync([$categories->get($category)->id]);
+        }
     }
 
     private function seedClub(): void
