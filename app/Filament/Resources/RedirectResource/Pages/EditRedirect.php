@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\RedirectResource\Pages;
 
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use App\Filament\Resources\RedirectResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 
-class EditRedirect extends EditRecord
+class EditRedirect extends EditRecordWithSaveAndBack
 {
     protected static string $resource = RedirectResource::class;
 

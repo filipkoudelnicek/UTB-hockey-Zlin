@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\ArticleResource\Pages;
 
 use App\Filament\Resources\ArticleResource;
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 
-class EditArticle extends EditRecord
+class EditArticle extends EditRecordWithSaveAndBack
 {
     protected static string $resource = ArticleResource::class;
 

@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\RoleResource\Pages;
 
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use App\Filament\Resources\RoleResource;
 use App\Models\Role;
 use Filament\Actions;
 use Filament\Notifications\Notification;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Exceptions\Halt;
 
-class EditRole extends EditRecord
+class EditRole extends EditRecordWithSaveAndBack
 {
     protected static string $resource = RoleResource::class;
 
@@ -52,7 +52,7 @@ class EditRole extends EditRecord
                 ->danger()
                 ->send();
 
-            throw (new Halt())->rollBackDatabaseTransaction();
+            throw (new Halt)->rollBackDatabaseTransaction();
         }
 
         return $data;

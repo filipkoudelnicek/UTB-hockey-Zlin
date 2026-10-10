@@ -4,11 +4,11 @@ namespace App\Filament\Resources\MatchResource\Pages;
 
 use App\Actions\UpdateMatchResultAction;
 use App\Filament\Resources\MatchResource;
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use App\Models\GameMatch;
-use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
-class EditMatch extends EditRecord
+class EditMatch extends EditRecordWithSaveAndBack
 {
     protected static string $resource = MatchResource::class;
 

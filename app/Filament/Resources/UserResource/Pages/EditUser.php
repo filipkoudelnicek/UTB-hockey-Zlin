@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use App\Filament\Resources\UserResource;
 use App\Models\Role;
+use Filament\Actions;
 use Filament\Notifications\Notification;
 use Filament\Support\Exceptions\Halt;
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 
-class EditUser extends EditRecord
+class EditUser extends EditRecordWithSaveAndBack
 {
     protected static string $resource = UserResource::class;
 
@@ -68,7 +68,7 @@ class EditUser extends EditRecord
                 ->danger()
                 ->send();
 
-            throw (new Halt())->rollBackDatabaseTransaction();
+            throw (new Halt)->rollBackDatabaseTransaction();
         }
 
         $this->selectedRoleId = $role->getKey();
@@ -80,7 +80,7 @@ class EditUser extends EditRecord
                 ->danger()
                 ->send();
 
-            throw (new Halt())->rollBackDatabaseTransaction();
+            throw (new Halt)->rollBackDatabaseTransaction();
         }
 
         return $data;

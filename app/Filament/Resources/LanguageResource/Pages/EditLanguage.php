@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\LanguageResource\Pages;
 
 use App\Filament\Resources\LanguageResource;
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 
-class EditLanguage extends EditRecord
+class EditLanguage extends EditRecordWithSaveAndBack
 {
     protected static string $resource = LanguageResource::class;
 

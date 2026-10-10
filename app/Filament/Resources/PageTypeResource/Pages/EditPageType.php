@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\PageTypeResource\Pages;
 
+use App\Filament\Resources\Pages\EditRecordWithSaveAndBack;
 use App\Filament\Resources\PageTypeResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 
-class EditPageType extends EditRecord
+class EditPageType extends EditRecordWithSaveAndBack
 {
     protected static string $resource = PageTypeResource::class;
 
