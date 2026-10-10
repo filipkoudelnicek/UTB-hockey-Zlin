@@ -2,14 +2,14 @@
     @if($categories->isNotEmpty())
         <div class="mb-10 flex flex-wrap gap-2">
             <button
-                class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $categoryId === null ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
+                class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all hover:border-wine focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $categoryId === null ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
                 type="button"
                 wire:click="selectCategory(null)"
             >Vše</button>
 
             @foreach($categories as $filterCategory)
                 <button
-                    class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $categoryId === $filterCategory->id ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
+                    class="inline-flex cursor-pointer items-center rounded-lg border-2 px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest transition-all hover:border-wine focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 {{ $categoryId === $filterCategory->id ? 'border-wine bg-wine text-white' : 'border-control-line bg-transparent text-nav-ink' }}"
                     type="button"
                     wire:click="selectCategory({{ $filterCategory->id }})"
                     wire:key="news-category-{{ $filterCategory->id }}"

@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', data_get($page?->content, 'seo.title', 'Zápasy') ?: 'Zápasy')
 
@@ -25,15 +25,15 @@
             @if($matches->isNotEmpty())
             <div class="mb-10 flex flex-wrap gap-2" data-filter-group data-target="#scheduleList">
                 <button
-                    class="inline-flex cursor-pointer items-center rounded-lg border-2 border-wine bg-wine px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest text-white transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3"
+                    class="inline-flex cursor-pointer items-center rounded-lg border-2 border-wine bg-wine px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest text-white transition-all hover:border-wine focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3"
                     data-filter="all"
                 >Všechny</button>
                 <button
-                    class="inline-flex cursor-pointer items-center rounded-lg border-2 border-control-line bg-transparent px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest text-nav-ink transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3"
+                    class="inline-flex cursor-pointer items-center rounded-lg border-2 border-control-line bg-transparent px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest text-nav-ink transition-all hover:border-wine focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3"
                     data-filter="next"
                 >Nadcházející</button>
                 <button
-                    class="inline-flex cursor-pointer items-center rounded-lg border-2 border-control-line bg-transparent px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest text-nav-ink transition-all focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3"
+                    class="inline-flex cursor-pointer items-center rounded-lg border-2 border-control-line bg-transparent px-5 py-2.5 font-condensed text-sm font-black uppercase tracking-widest text-nav-ink transition-all hover:border-wine focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3"
                     data-filter="past"
                 >Odehrané</button>
             </div>
@@ -110,8 +110,17 @@
                                     <a
                                         class="inline-flex min-w-[130px] items-center justify-center rounded-lg bg-orange px-5 py-3 font-condensed text-sm font-black uppercase tracking-widest text-white no-underline shadow-[0_12px_24px_rgba(245,120,0,0.22)] transition-all hover:-translate-y-px hover:!bg-orange-hover hover:!text-white hover:shadow-[0_16px_32px_rgba(245,120,0,.42)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 max-mobile:w-full"
                                         href="{{ $match->ticket_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
                                     >VSTUPENKY</a>
-                                @elseif(!$past)
+                                @endif
+                                @if(!$past && $match->previewArticle)
+                                    <a
+                                        class="inline-flex min-w-[130px] items-center justify-center rounded-lg border-2 border-wine px-5 py-3 font-condensed text-sm font-black uppercase tracking-widest text-wine no-underline transition-all hover:bg-wine hover:text-white focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 max-mobile:w-full"
+                                        href="{{ $match->previewArticle->url }}"
+                                    >PREVIEW</a>
+                                @endif
+                                @if(!$past && !$match->ticket_url && !$match->previewArticle)
                                     <button
                                         aria-label="Vstupenky zatím nejsou k dispozici"
                                         class="inline-flex min-w-[130px] cursor-not-allowed items-center justify-center rounded-lg border border-wine/10 bg-paper-2 px-5 py-3 font-condensed text-sm font-black uppercase tracking-widest text-wine/35 shadow-none max-mobile:w-full"

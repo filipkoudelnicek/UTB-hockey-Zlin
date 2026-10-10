@@ -29,6 +29,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Validation\ClosureValidationRule;
 
 class MatchResource extends AdminResource
 {
@@ -194,14 +195,14 @@ class MatchResource extends AdminResource
             ->searchable()
             ->nullable()
             ->rules([
-                function (string $attribute, mixed $value, Closure $fail) use ($categoryKey, $categoryLabel): void {
+                new ClosureValidationRule(function (string $attribute, mixed $value, Closure $fail) use ($categoryKey, $categoryLabel): void {
                     if ($value && ! Article::query()
                         ->whereKey($value)
                         ->whereHas('categories', fn (Builder $query): Builder => $query->where('system_key', $categoryKey))
                         ->exists()) {
                         $fail("Vybraný článek musí být v kategorii {$categoryLabel}.");
                     }
-                },
+                }),
             ]);
     }
 
