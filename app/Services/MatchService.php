@@ -16,7 +16,7 @@ class MatchService
         $competitionSeason ??= CompetitionSeason::currentForClub($clubTeam);
         if (!$competitionSeason || !$clubTeam) return null;
 
-        $query = GameMatch::query()->with(['homeTeam','awayTeam','venue','competitionSeason.competition'])
+        $query = GameMatch::query()->with(['homeTeam','awayTeam','venue','competitionSeason.competition','previewArticle'])
             ->where(fn (Builder $q) => $q->where('home_team_id', $clubTeam->id)->orWhere('away_team_id', $clubTeam->id))
             ->upcoming();
 

@@ -18,7 +18,7 @@ class GameMatch extends Model
     protected $table = 'matches';
     protected $fillable = [
         'competition_season_id', 'match_type', 'played_at', 'venue_id', 'home_team_id', 'away_team_id',
-        'status', 'home_score', 'away_score', 'went_to_overtime', 'detail_url', 'ticket_url', 'report_article_id', 'source', 'external_id',
+        'status', 'home_score', 'away_score', 'went_to_overtime', 'detail_url', 'ticket_url', 'preview_article_id', 'report_article_id', 'source', 'external_id',
     ];
     protected $casts = [
         'played_at' => 'datetime',
@@ -31,6 +31,7 @@ class GameMatch extends Model
     public function venue(): BelongsTo { return $this->belongsTo(Venue::class); }
     public function homeTeam(): BelongsTo { return $this->belongsTo(Team::class, 'home_team_id'); }
     public function awayTeam(): BelongsTo { return $this->belongsTo(Team::class, 'away_team_id'); }
+    public function previewArticle(): BelongsTo { return $this->belongsTo(Article::class, 'preview_article_id'); }
     public function reportArticle(): BelongsTo { return $this->belongsTo(Article::class, 'report_article_id'); }
     public function playerStats(): HasMany { return $this->hasMany(MatchPlayerStat::class, 'match_id'); }
 

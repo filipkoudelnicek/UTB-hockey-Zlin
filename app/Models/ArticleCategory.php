@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ArticleCategory extends Model
 {
+    public const KEY_PREVIEW = 'preview';
+
+    public const KEY_REPORT = 'report';
+
     protected $fillable = ['name'];
 
     protected function casts(): array

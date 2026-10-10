@@ -86,14 +86,6 @@
                     </div>
                 @endif
 
-                @if(filled(data_get($page->content, 'matches.detail_label')))
-                <a
-                    class="inline-flex items-center gap-2 border-b-2 border-b-transparent pb-[0.15rem] text-[.64rem] font-black uppercase tracking-micro text-wine transition-all hover:gap-3 hover:border-b-wine hover:text-white max-mobile:!text-white"
-                    href="{{ \App\Services\PageService::getRelativeUrlByType('matches', $page->lang_locale ?? null, '/zapasy') }}"
-                >
-                    {{ data_get($page->content, 'matches.detail_label') }} <span class="font-condensed text-[1.03rem] leading-none">›</span>
-                </a>
-                @endif
             </aside>
         </div>
     </section>
@@ -162,6 +154,14 @@
                                     rel="noopener"
                                 >
                                     VSTUPENKY <span class="font-condensed text-[1.03rem] leading-none">›</span>
+                                </a>
+                            @endif
+                            @if($nextMatch->previewArticle)
+                                <a
+                                    class="inline-flex items-center gap-2 border-b-2 border-b-transparent pb-[0.15rem] font-condensed text-[.72rem] font-black uppercase tracking-meta text-orange-css transition-all hover:gap-3 hover:border-b-orange-css hover:text-white"
+                                    href="{{ $nextMatch->previewArticle->url }}"
+                                >
+                                    PREVIEW ZÁPASU <span class="font-condensed text-[1.03rem] leading-none">›</span>
                                 </a>
                             @endif
                         </div>

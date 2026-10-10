@@ -2,15 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\MatchType;
 use App\Actions\SynchronizeMatchStatusesAction;
+use App\Enums\MatchType;
 use App\Filament\Resources\MatchResource\Pages;
 use App\Models\Article;
+use App\Models\ArticleCategory;
 use App\Models\CompetitionSeason;
 use App\Models\GameMatch;
 use App\Models\Player;
 use App\Models\Team;
 use App\Models\Venue;
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Actions;
 use Filament\Forms\Components\DateTimePicker;
@@ -69,8 +71,14 @@ class MatchResource extends AdminResource
                         ->required(fn (Get $get) => $get('match_type') === MatchType::League->value)
                         ->nullable()
                         ->helperText('U přátelského zápasu může zůstat prázdný.'),
+                ]),
+                Grid::make(2)->schema([
                     DateTimePicker::make('played_at')->label('Datum a čas')->seconds(false)->required(),
-                    TextInput::make('ticket_url')->label('Vstupenky URL')->url(),
+                    Select::make('venue_id')
+                        ->label('Stadion')
+                        ->options(fn () => Venue::orderBy('name')->pluck('name', 'id'))
+                        ->searchable()
+                        ->nullable(),
                 ]),
                 Grid::make(2)->schema([
                     Grid::make(1)->schema([
@@ -89,23 +97,19 @@ class MatchResource extends AdminResource
                         TextInput::make('away_score')->label('Skóre hosté')->numeric()->minValue(0)->nullable(),
                     ]),
                 ]),
+                Toggle::make('went_to_overtime')
+                    ->label('Zápas byl rozhodnut v prodloužení')
+                    ->default(false),
                 Grid::make(2)->schema([
-                    Toggle::make('went_to_overtime')
-                        ->label('Zápas byl rozhodnut v prodloužení')
-                        ->default(false),
-                    Select::make('venue_id')
-                        ->label('Stadion')
-                        ->options(fn () => Venue::orderBy('name')->pluck('name', 'id'))
-                        ->searchable()
-                        ->nullable()
-                        ->visible(fn (Get $get): bool => filled($get('home_team_id'))),
-                ]),
-                Grid::make(2)->schema([
-                    Select::make('report_article_id')->label('Report článek')->options(fn () => Article::orderByDesc('publish_time')->get()->mapWithKeys(fn (Article $article) => [$article->id => $article->plain_title]))->searchable()->nullable(),
+                    TextInput::make('ticket_url')->label('Odkaz na vstupenky')->url(),
                     TextInput::make('detail_url')
-                        ->label('Odkaz na detail zápasu')
+                        ->label('Odkaz na detail')
                         ->url()
                         ->maxLength(2048),
+                ]),
+                Grid::make(2)->schema([
+                    self::articleSelect('preview_article_id', 'Preview článek', ArticleCategory::KEY_PREVIEW, 'Preview'),
+                    self::articleSelect('report_article_id', 'Report článek', ArticleCategory::KEY_REPORT, 'Report'),
                 ]),
             ])->columns(1),
 
@@ -176,6 +180,29 @@ class MatchResource extends AdminResource
                         }),
                 ]),
         ])->columns(1);
+    }
+
+    private static function articleSelect(string $name, string $label, string $categoryKey, string $categoryLabel): Select
+    {
+        return Select::make($name)
+            ->label($label)
+            ->options(fn () => Article::query()
+                ->whereHas('categories', fn (Builder $query): Builder => $query->where('system_key', $categoryKey))
+                ->orderByDesc('publish_time')
+                ->get(['id', 'title'])
+                ->mapWithKeys(fn (Article $article): array => [$article->id => $article->plain_title]))
+            ->searchable()
+            ->nullable()
+            ->rules([
+                function (string $attribute, mixed $value, Closure $fail) use ($categoryKey, $categoryLabel): void {
+                    if ($value && ! Article::query()
+                        ->whereKey($value)
+                        ->whereHas('categories', fn (Builder $query): Builder => $query->where('system_key', $categoryKey))
+                        ->exists()) {
+                        $fail("Vybraný článek musí být v kategorii {$categoryLabel}.");
+                    }
+                },
+            ]);
     }
 
     public static function table(Table $table): Table

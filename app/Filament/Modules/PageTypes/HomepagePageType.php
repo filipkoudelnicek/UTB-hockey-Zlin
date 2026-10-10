@@ -27,8 +27,7 @@ class HomepagePageType
                 TextInput::make('content.matches.eyebrow')->label('Krátký text nad nadpisem'),
                 TextInput::make('content.matches.title')->label('Nadpis'),
                 TextInput::make('content.matches.all_label')->label('Odkaz na všechny zápasy'),
-                TextInput::make('content.matches.detail_label')->label('Odkaz na detail'),
-            ])->description('Nadpis sekce a odkazy k automaticky doplňovaným zápasům.')->icon(Heroicon::OutlinedTrophy)->iconColor('primary')->columns(2),
+            ])->description('Nadpis sekce a odkaz na všechny zápasy.')->icon(Heroicon::OutlinedTrophy)->iconColor('primary')->columns(2),
 
             Section::make('Sociální sítě')->schema([
                 TextInput::make('content.social.eyebrow')->label('Krátký text nad nadpisem'),
