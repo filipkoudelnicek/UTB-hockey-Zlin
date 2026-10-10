@@ -65,10 +65,15 @@ class Article extends Model
     public function categories(): BelongsToMany { return $this->belongsToMany(ArticleCategory::class, 'article_category'); }
     public function scopePublished(Builder $query): Builder { return $query->where('active',true)->where(fn(Builder $q)=>$q->whereNull('publish_time')->orWhere('publish_time','<=',now())); }
 
+    /** @var array<string, string> */
+    private static array $blogBaseCache = [];
+
     public function getUrlAttribute(): string
     {
-        $page = Page::active()->where('type','blog')->where('lang_locale',$this->lang_locale)->first();
-        $base = trim((string) ($page?->full_slug ?? $page?->slug ?? 'aktuality'), '/');
+        $base = self::$blogBaseCache[$this->lang_locale] ??= (function () {
+            $page = Page::active()->where('type','blog')->where('lang_locale',$this->lang_locale)->first();
+            return trim((string) ($page?->full_slug ?? $page?->slug ?? 'aktuality'), '/');
+        })();
         $prefix = $this->lang_locale !== UrlService::getDefaultLocale() ? '/'.$this->lang_locale : '';
         return $prefix.'/'.trim($base.'/'.$this->slug, '/');
     }

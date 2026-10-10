@@ -15,8 +15,29 @@ class MediaService
             return null;
         }
         
-        $media = Media::find($mediaId);
-        return $media ? '/uploads/' . ltrim($media->path, '/') : null;
+        if (! array_key_exists($mediaId, self::$pathCache)) {
+            self::$pathCache[$mediaId] = Media::find($mediaId)?->path;
+        }
+
+        $path = self::$pathCache[$mediaId];
+        return $path ? '/uploads/' . ltrim($path, '/') : null;
+    }
+
+    /** @var array<int|string, string|null> */
+    private static array $pathCache = [];
+
+    /** Načte cesty k více médiím jedním dotazem, aby se při výpisu nedotazovalo po jednom. */
+    public static function preload(iterable $mediaIds): void
+    {
+        $ids = collect($mediaIds)->filter()->unique()->reject(fn ($id) => array_key_exists($id, self::$pathCache))->values();
+        if ($ids->isEmpty()) {
+            return;
+        }
+
+        $found = Media::whereKey($ids)->pluck('path', 'id');
+        foreach ($ids as $id) {
+            self::$pathCache[$id] = $found[$id] ?? null;
+        }
     }
 
     /**
