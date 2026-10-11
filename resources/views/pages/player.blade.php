@@ -102,7 +102,14 @@
 
             <div class="max-mobile:min-w-0 max-mobile:[order:2]">
                 <div class="prose mb-5 max-w-none text-lg font-semibold leading-relaxed text-ink/90">
-                    {!! $player->bio ?: 'Profil hráče bude brzy doplněn.' !!}
+                    @php
+                        $bioText = trim(str_replace("\xC2\xA0", ' ', html_entity_decode(strip_tags((string) $player->bio))));
+                    @endphp
+                    @if($bioText !== '' || str_contains((string) $player->bio, '<img'))
+                        {!! $player->bio !!}
+                    @else
+                        Profil hráče bude brzy doplněn.
+                    @endif
                 </div>
 
                 @if($player->quote)
