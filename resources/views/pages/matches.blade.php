@@ -71,16 +71,16 @@
                                 <div>
                                     <span class="mb-2 inline-block text-10 font-bold uppercase tracking-label {{ $past ? 'text-muted' : 'text-orange' }}">
                                         {{ $past ? 'ODEHRÁNO' : 'NADCHÁZEJÍCÍ' }} · {{ mb_strtoupper($competitionLabel) }}
+                                        @if($clubIsHome || $clubIsAway)
+                                            · <span class="inline-flex w-fit items-center rounded-md px-2.5 py-1 text-10 font-black uppercase tracking-widest {{ $clubIsHome ? 'bg-orange/10 text-wine ring-1 ring-inset ring-orange/25' : 'bg-paper text-nav-ink ring-1 ring-inset ring-line' }}">
+                                                {{ $clubIsHome ? 'Domácí zápas' : 'Venkovní zápas' }}
+                                            </span>
+                                        @endif
                                     </span>
                                     <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                                         <b class="text-sm font-semibold text-muted">
                                             {{ $past ? '' : $match->played_at->format('H:i') . ' · ' }}{{ $match->venue?->name }}{{ $match->venue?->city ? ', ' . $match->venue->city : '' }}
                                         </b>
-                                        @if($clubIsHome || $clubIsAway)
-                                            <span class="inline-flex w-fit items-center rounded-md px-2.5 py-1 text-10 font-black uppercase tracking-widest {{ $clubIsHome ? 'bg-orange/10 text-wine ring-1 ring-inset ring-orange/25' : 'bg-paper text-nav-ink ring-1 ring-inset ring-line' }}">
-                                                {{ $clubTeam->name }} {{ $past ? 'HRÁLI' : 'HRAJE' }} {{ $clubIsHome ? 'DOMA' : 'VENKU' }}
-                                            </span>
-                                        @endif
                                     </div>
                                 </div>
 
