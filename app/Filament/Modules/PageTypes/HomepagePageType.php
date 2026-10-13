@@ -41,6 +41,19 @@ class HomepagePageType
                 TextInput::make('content.team.cta_label')->label('Text tlačítka'),
             ])->description('Textový blok vedle automaticky se střídajících aktivních hráčů.')->icon(Heroicon::OutlinedUsers)->iconColor('primary')->columns(2),
 
+            Section::make('Aktuality')->schema([
+                TextInput::make('content.news.eyebrow')->label('Krátký text nad nadpisem'),
+                HighlightedTextInput::make('content.news.heading')->label('Nadpis')->legacy('content.news.title', 'content.news.accent'),
+                TextInput::make('content.news.all_label')->label('Odkaz na všechny aktuality'),
+                TextInput::make('content.news.read_label')->label('Text odkazu na článek'),
+            ])->description('Nadpisy a odkazy pro automatický výpis posledních aktualit.')->icon(Heroicon::OutlinedNewspaper)->iconColor('primary')->columns(2),
+
+            Section::make('Tabulka soutěže')->schema([
+                HighlightedTextInput::make('content.standings.heading')->label('Nadpis')->legacy('content.standings.title', 'content.standings.accent')->columnSpanFull(),
+                Textarea::make('content.standings.text')->label('Text')->rows(3)->columnSpanFull(),
+                TextInput::make('content.standings.cta_label')->label('Text odkazu'),
+            ])->description('Texty vedle aktuální tabulky soutěže. Hodnoty tabulky upravujete v Přehledech.')->icon(Heroicon::OutlinedChartBar)->iconColor('primary')->columns(2),
+
             Section::make('Promo klubu')->schema([
                 TextInput::make('content.club.eyebrow')->label('Krátký text nad nadpisem'),
                 HighlightedTextInput::make('content.club.heading')->label('Nadpis')->legacy('content.club.title', 'content.club.accent'),
@@ -51,19 +64,6 @@ class HomepagePageType
                     TextInput::make('label')->label('Popisek'),
                 ])->columns(2)->maxItems(3)->reorderable(false)->columnSpanFull(),
             ])->description('Představovací blok klubu včetně nejdůležitějších čísel.')->icon(Heroicon::OutlinedBuildingOffice2)->iconColor('primary')->columns(2),
-
-            Section::make('Tabulka soutěže')->schema([
-                HighlightedTextInput::make('content.standings.heading')->label('Nadpis')->legacy('content.standings.title', 'content.standings.accent')->columnSpanFull(),
-                Textarea::make('content.standings.text')->label('Text')->rows(3)->columnSpanFull(),
-                TextInput::make('content.standings.cta_label')->label('Text odkazu'),
-            ])->description('Texty vedle aktuální tabulky soutěže. Hodnoty tabulky upravujete v Přehledech.')->icon(Heroicon::OutlinedChartBar)->iconColor('primary')->columns(2),
-
-            Section::make('Aktuality')->schema([
-                TextInput::make('content.news.eyebrow')->label('Krátký text nad nadpisem'),
-                HighlightedTextInput::make('content.news.heading')->label('Nadpis')->legacy('content.news.title', 'content.news.accent'),
-                TextInput::make('content.news.all_label')->label('Odkaz na všechny aktuality'),
-                TextInput::make('content.news.read_label')->label('Text odkazu na článek'),
-            ])->description('Nadpisy a odkazy pro automatický výpis posledních aktualit.')->icon(Heroicon::OutlinedNewspaper)->iconColor('primary')->columns(2),
 
             Section::make('Partneři')->schema([
                 TextInput::make('content.partners.title')->label('Nadpis sekce'),

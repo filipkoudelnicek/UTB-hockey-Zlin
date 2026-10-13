@@ -452,57 +452,66 @@
     </section>
     @endif
 
-    {{-- Klub sekce --}}
-    @if(filled(data_get($page->content, 'club.eyebrow')) || filled(data_get($page->content, 'club.heading')) || filled(data_get($page->content, 'club.title')) || filled(data_get($page->content, 'club.accent')) || filled(data_get($page->content, 'club.text')) || filled(data_get($page->content, 'club.stats')) || filled(data_get($page->content, 'club.cta_label')))
-    <section class="relative bg-paper px-0 py-20 max-mobile:bg-paper" id="klub">
-        <div class="relative z-[1] mx-auto my-0 grid min-h-[28rem] w-shell grid-cols-[minmax(0,1.05fr)_minmax(0,1.2fr)] items-center gap-10 max-tablet:grid-cols-1 max-mobile:min-h-auto max-mobile:grid-cols-1 max-mobile:gap-8">
-            <div class="pr-4 text-ink-css">
-                <p class="mb-[1.1rem] mx-0 mt-0 inline-flex items-center gap-[0.8rem] text-[.7rem] font-extrabold uppercase tracking-micro text-orange-css">
-                    <span class="block h-[0.16rem] w-[2.1rem] bg-current"></span>
-                    {{ data_get($page->content, 'club.eyebrow') }}
-                </p>
-                @if(filled(data_get($page->content, 'club.heading')) || filled(data_get($page->content, 'club.title')) || filled(data_get($page->content, 'club.accent')))
-                <h2 class="m-0 font-condensed text-promo font-black uppercase leading-80 text-ink-css max-mobile:text-section-title-mobile">
-                    <x-highlighted-text :value="data_get($page->content, 'club.heading')" :title="data_get($page->content, 'club.title')" :accent="data_get($page->content, 'club.accent')" accent-class="block text-orange-css" />
-                </h2>
-                @endif
-                @if(filled(data_get($page->content, 'club.cta_label')))
+    {{-- Aktuality sekce --}}
+    @if($articles->isNotEmpty() || filled(data_get($page->content, 'news.eyebrow')) || filled(data_get($page->content, 'news.heading')) || filled(data_get($page->content, 'news.title')) || filled(data_get($page->content, 'news.accent')) || filled(data_get($page->content, 'news.all_label')))
+    <section class="bg-paper px-0 py-20" id="novinky">
+        <div class="mx-auto my-0 w-shell">
+            <div class="mb-10 flex items-end justify-between gap-6 max-tablet:flex-col max-tablet:items-start">
+                <div>
+                    <p class="mb-[1.1rem] mx-0 mt-0 inline-flex items-center gap-[0.8rem] text-[.7rem] font-extrabold uppercase tracking-micro text-wine">
+                        <span class="block h-[0.16rem] w-[2.1rem] bg-current"></span>
+                        {{ data_get($page->content, 'news.eyebrow') }}
+                    </p>
+                    @if(filled(data_get($page->content, 'news.heading')) || filled(data_get($page->content, 'news.title')) || filled(data_get($page->content, 'news.accent')))
+                    <h2 class="m-0 font-condensed text-section-title font-black uppercase leading-none text-ink-css max-mobile:text-section-title-mobile">
+                        <x-highlighted-text :value="data_get($page->content, 'news.heading')" :title="data_get($page->content, 'news.title')" :accent="data_get($page->content, 'news.accent')" accent-class="block text-orange-css" />
+                    </h2>
+                    @endif
+                </div>
+                @if(filled(data_get($page->content, 'news.all_label')))
                 <a
-                    class="mt-[1.6rem] inline-flex items-center justify-center gap-[0.8rem] rounded-lg border border-wine/20 bg-wine px-6 py-4 font-condensed text-[.86rem] font-black uppercase tracking-action text-white [transition:transform_0.2s_ease,box-shadow_0.2s_ease,background_0.2s_ease,color_0.2s_ease] hover:-translate-y-px hover:bg-wine-hover hover:shadow-[0_12px_28px_rgba(106,27,33,.32)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none"
-                    href="{{ \App\Services\PageService::getRelativeUrlByType('about', $page->lang_locale ?? null, '/klub') }}"
+                    class="inline-flex items-center gap-2 border-b-2 border-b-wine pb-[0.15rem] font-condensed text-[.8rem] font-black uppercase tracking-label text-wine transition-all hover:gap-3 hover:border-orange-css hover:text-orange-css"
+                    href="{{ \App\Services\PageService::getRelativeUrlByType('blog', $page->lang_locale ?? null, '/aktuality') }}"
                 >
-                    {{ data_get($page->content, 'club.cta_label') }} <span class="font-condensed text-[1.03rem] leading-none">›</span>
+                    {{ data_get($page->content, 'news.all_label') }} <span class="font-condensed text-[1.03rem] leading-none">›</span>
                 </a>
                 @endif
             </div>
 
-            <div class="flex min-h-72 flex-col justify-center pt-4 text-ink-css/80 max-mobile:min-h-auto max-mobile:pt-0">
-                @if(filled(data_get($page->content, 'club.text')))
-                <p class="mb-8 mx-0 mt-0 max-w-[35rem] text-[1.15rem] leading-160 text-ink-css/80">
-                    {{ data_get($page->content, 'club.text') }}
-                </p>
-                @endif
-                <div class="grid grid-cols-3 gap-0 border-t border-t-ink-css/14">
-                    @php
-                        $clubStats = collect(data_get($page->content, 'club.stats') ?: [])
-                            ->filter(fn ($stat) => filled(data_get($stat, 'value')) || filled(data_get($stat, 'label')))
-                            ->take(3);
-                    @endphp
-                    @foreach($clubStats as $stat)
-                        <div class="min-h-32 px-[0.6rem] pb-0 pt-5 {{ !$loop->last ? 'border-r border-r-ink-css/14' : 'border-r-0' }}">
-                            @if(filled(data_get($stat, 'value')))
-                            <strong class="block font-condensed text-stat leading-none text-wine">
-                                {{ data_get($stat, 'value') }}
-                            </strong>
-                            @endif
-                            @if(filled(data_get($stat, 'label')))
-                            <span class="block mt-[0.6rem] text-[.7rem] font-extrabold tracking-promo uppercase text-ink-css/70">
-                                {{ data_get($stat, 'label') }}
-                            </span>
+            <div class="grid grid-cols-3 gap-[1.3rem] max-tablet:grid-cols-1">
+                @foreach($articles as $article)
+                    <article class="group relative flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-ink-css/8 bg-white shadow-[0_10px_18px_rgba(19,17,17,0.03)] transition-all duration-500 ease-out hover:-translate-y-[5px] hover:shadow-[0_20px_36px_rgba(19,17,17,.10)] motion-reduce:!transition-none">
+                        <div class="h-[13.2rem] overflow-hidden">
+                            @if(filled($article->featured_media_id))
+                                <x-curator-glider
+                                    :media="$article->featured_media_id"
+                                    :alt="$article->plain_title"
+                                    class="block h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:!transition-none"
+                                />
+                            @else
+                                <img
+                                    alt=""
+                                    class="block h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:!transition-none"
+                                    src="{{ asset('assets/obrazky/article.webp') }}"
+                                >
                             @endif
                         </div>
-                    @endforeach
-                </div>
+                        <div class="flex flex-1 flex-col px-[1.2rem] pb-[1.1rem] pt-[1.3rem]">
+                            <p class="mb-[0.7rem] mx-0 mt-0 text-[.62rem] font-extrabold uppercase tracking-meta text-muted">
+                                {{ optional($article->publish_time)->format('d. m. Y') }}@if($article->categories->isNotEmpty()) · {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}@endif
+                            </p>
+                            <h3 class="m-0 flex-1 font-condensed text-[1.7rem] uppercase leading-[1.05] tracking-[-.04em] text-ink-css">
+                                {{ $article->plain_title }}
+                            </h3>
+                            <a
+                                class="mt-4 inline-flex items-center gap-[0.45rem] text-[.66rem] font-black uppercase tracking-meta text-orange-css [transition:gap_0.2s] hover:gap-[.7rem] after:absolute after:inset-0 after:content-[''] focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none"
+                                href="{{ $article->url }}"
+                            >
+                                {{ data_get($page->content, 'news.read_label') }} <span>›</span>
+                            </a>
+                        </div>
+                    </article>
+                @endforeach
             </div>
         </div>
     </section>
@@ -584,66 +593,57 @@
     </section>
     @endif
 
-    {{-- Aktuality sekce --}}
-    @if($articles->isNotEmpty() || filled(data_get($page->content, 'news.eyebrow')) || filled(data_get($page->content, 'news.heading')) || filled(data_get($page->content, 'news.title')) || filled(data_get($page->content, 'news.accent')) || filled(data_get($page->content, 'news.all_label')))
-    <section class="bg-paper px-0 py-20" id="novinky">
-        <div class="mx-auto my-0 w-shell">
-            <div class="mb-10 flex items-end justify-between gap-6 max-tablet:flex-col max-tablet:items-start">
-                <div>
-                    <p class="mb-[1.1rem] mx-0 mt-0 inline-flex items-center gap-[0.8rem] text-[.7rem] font-extrabold uppercase tracking-micro text-wine">
-                        <span class="block h-[0.16rem] w-[2.1rem] bg-current"></span>
-                        {{ data_get($page->content, 'news.eyebrow') }}
-                    </p>
-                    @if(filled(data_get($page->content, 'news.heading')) || filled(data_get($page->content, 'news.title')) || filled(data_get($page->content, 'news.accent')))
-                    <h2 class="m-0 font-condensed text-section-title font-black uppercase leading-none text-ink-css max-mobile:text-section-title-mobile">
-                        <x-highlighted-text :value="data_get($page->content, 'news.heading')" :title="data_get($page->content, 'news.title')" :accent="data_get($page->content, 'news.accent')" accent-class="block text-orange-css" />
-                    </h2>
-                    @endif
-                </div>
-                @if(filled(data_get($page->content, 'news.all_label')))
+    {{-- Klub sekce --}}
+    @if(filled(data_get($page->content, 'club.eyebrow')) || filled(data_get($page->content, 'club.heading')) || filled(data_get($page->content, 'club.title')) || filled(data_get($page->content, 'club.accent')) || filled(data_get($page->content, 'club.text')) || filled(data_get($page->content, 'club.stats')) || filled(data_get($page->content, 'club.cta_label')))
+    <section class="relative bg-paper px-0 py-20 max-mobile:bg-paper" id="klub">
+        <div class="relative z-[1] mx-auto my-0 grid min-h-[28rem] w-shell grid-cols-[minmax(0,1.05fr)_minmax(0,1.2fr)] items-center gap-10 max-tablet:grid-cols-1 max-mobile:min-h-auto max-mobile:grid-cols-1 max-mobile:gap-8">
+            <div class="pr-4 text-ink-css">
+                <p class="mb-[1.1rem] mx-0 mt-0 inline-flex items-center gap-[0.8rem] text-[.7rem] font-extrabold uppercase tracking-micro text-orange-css">
+                    <span class="block h-[0.16rem] w-[2.1rem] bg-current"></span>
+                    {{ data_get($page->content, 'club.eyebrow') }}
+                </p>
+                @if(filled(data_get($page->content, 'club.heading')) || filled(data_get($page->content, 'club.title')) || filled(data_get($page->content, 'club.accent')))
+                <h2 class="m-0 font-condensed text-promo font-black uppercase leading-80 text-ink-css max-mobile:text-section-title-mobile">
+                    <x-highlighted-text :value="data_get($page->content, 'club.heading')" :title="data_get($page->content, 'club.title')" :accent="data_get($page->content, 'club.accent')" accent-class="block text-orange-css" />
+                </h2>
+                @endif
+                @if(filled(data_get($page->content, 'club.cta_label')))
                 <a
-                    class="inline-flex items-center gap-2 border-b-2 border-b-wine pb-[0.15rem] font-condensed text-[.8rem] font-black uppercase tracking-label text-wine transition-all hover:gap-3 hover:border-orange-css hover:text-orange-css"
-                    href="{{ \App\Services\PageService::getRelativeUrlByType('blog', $page->lang_locale ?? null, '/aktuality') }}"
+                    class="mt-[1.6rem] inline-flex items-center justify-center gap-[0.8rem] rounded-lg border border-wine/20 bg-wine px-6 py-4 font-condensed text-[.86rem] font-black uppercase tracking-action text-white [transition:transform_0.2s_ease,box-shadow_0.2s_ease,background_0.2s_ease,color_0.2s_ease] hover:-translate-y-px hover:bg-wine-hover hover:shadow-[0_12px_28px_rgba(106,27,33,.32)] focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none"
+                    href="{{ \App\Services\PageService::getRelativeUrlByType('about', $page->lang_locale ?? null, '/klub') }}"
                 >
-                    {{ data_get($page->content, 'news.all_label') }} <span class="font-condensed text-[1.03rem] leading-none">›</span>
+                    {{ data_get($page->content, 'club.cta_label') }} <span class="font-condensed text-[1.03rem] leading-none">›</span>
                 </a>
                 @endif
             </div>
 
-            <div class="grid grid-cols-3 gap-[1.3rem] max-tablet:grid-cols-1">
-                @foreach($articles as $article)
-                    <article class="group relative flex cursor-pointer flex-col overflow-hidden rounded-3xl border border-ink-css/8 bg-white shadow-[0_10px_18px_rgba(19,17,17,0.03)] transition-all duration-500 ease-out hover:-translate-y-[5px] hover:shadow-[0_20px_36px_rgba(19,17,17,.10)] motion-reduce:!transition-none">
-                        <div class="h-[13.2rem] overflow-hidden">
-                            @if(filled($article->featured_media_id))
-                                <x-curator-glider
-                                    :media="$article->featured_media_id"
-                                    :alt="$article->plain_title"
-                                    class="block h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:!transition-none"
-                                />
-                            @else
-                                <img
-                                    alt=""
-                                    class="block h-full w-full max-w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:!transition-none"
-                                    src="{{ asset('assets/obrazky/article.webp') }}"
-                                >
+            <div class="flex min-h-72 flex-col justify-center pt-4 text-ink-css/80 max-mobile:min-h-auto max-mobile:pt-0">
+                @if(filled(data_get($page->content, 'club.text')))
+                <p class="mb-8 mx-0 mt-0 max-w-[35rem] text-[1.15rem] leading-160 text-ink-css/80">
+                    {{ data_get($page->content, 'club.text') }}
+                </p>
+                @endif
+                <div class="grid grid-cols-3 gap-0 border-t border-t-ink-css/14">
+                    @php
+                        $clubStats = collect(data_get($page->content, 'club.stats') ?: [])
+                            ->filter(fn ($stat) => filled(data_get($stat, 'value')) || filled(data_get($stat, 'label')))
+                            ->take(3);
+                    @endphp
+                    @foreach($clubStats as $stat)
+                        <div class="min-h-32 px-[0.6rem] pb-0 pt-5 {{ !$loop->last ? 'border-r border-r-ink-css/14' : 'border-r-0' }}">
+                            @if(filled(data_get($stat, 'value')))
+                            <strong class="block font-condensed text-stat leading-none text-wine">
+                                {{ data_get($stat, 'value') }}
+                            </strong>
+                            @endif
+                            @if(filled(data_get($stat, 'label')))
+                            <span class="block mt-[0.6rem] text-[.7rem] font-extrabold tracking-promo uppercase text-ink-css/70">
+                                {{ data_get($stat, 'label') }}
+                            </span>
                             @endif
                         </div>
-                        <div class="flex flex-1 flex-col px-[1.2rem] pb-[1.1rem] pt-[1.3rem]">
-                            <p class="mb-[0.7rem] mx-0 mt-0 text-[.62rem] font-extrabold uppercase tracking-meta text-muted">
-                                {{ optional($article->publish_time)->format('d. m. Y') }}@if($article->categories->isNotEmpty()) · {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}@endif
-                            </p>
-                            <h3 class="m-0 flex-1 font-condensed text-[1.7rem] uppercase leading-[1.05] tracking-[-.04em] text-ink-css">
-                                {{ $article->plain_title }}
-                            </h3>
-                            <a
-                                class="mt-4 inline-flex items-center gap-[0.45rem] text-[.66rem] font-black uppercase tracking-meta text-orange-css [transition:gap_0.2s] hover:gap-[.7rem] after:absolute after:inset-0 after:content-[''] focus-visible:outline focus-visible:outline-3 focus-visible:outline-orange focus-visible:outline-offset-3 motion-reduce:!transition-none"
-                                href="{{ $article->url }}"
-                            >
-                                {{ data_get($page->content, 'news.read_label') }} <span>›</span>
-                            </a>
-                        </div>
-                    </article>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </div>
     </section>
