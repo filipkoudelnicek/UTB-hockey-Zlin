@@ -30,7 +30,7 @@
                             <p class="mb-4 mt-0 text-10 font-extrabold uppercase tracking-meta text-muted">
                                 {{ optional($article->publish_time)->format('d. m. Y') }}@if($article->categories->isNotEmpty()) · {{ mb_strtoupper($article->categories->pluck('name')->join(', ')) }}@endif
                             </p>
-                            <h2 class="m-0 font-condensed text-[clamp(2.2rem,4vw,4rem)] font-black uppercase leading-95 text-ink-css">{{ $article->plain_title }}</h2>
+                            <h2 class="m-0 font-condensed text-[clamp(2.2rem,3vw,3rem)] font-black uppercase leading-95 text-ink-css">{{ $article->plain_title }}</h2>
                             @if($article->excerpt)
                                 <p class="mt-5 text-sm leading-relaxed text-ink/65">{{ $article->excerpt }}</p>
                             @endif
