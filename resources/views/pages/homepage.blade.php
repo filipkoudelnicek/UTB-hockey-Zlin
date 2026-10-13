@@ -654,9 +654,9 @@
     @if($partnersWithLogo->isNotEmpty())
     <section class="bg-white py-12">
         <div class="mx-auto max-w-7xl px-6">
-            <p class="mb-8 text-center text-xs font-bold uppercase tracking-[0.2em] text-wine">
+            <h3 class="mb-8 text-center text-xs font-bold uppercase tracking-[0.2em] text-wine">
                 {{ data_get($page->content, 'partners.title') }}
-            </p>
+            </h3>
             <div aria-label="Partneři klubu" class="flex items-center gap-[0.8rem] max-partner:gap-[0.35rem]">
                 <button
                     aria-label="Předchozí partner"
@@ -673,7 +673,7 @@
                     <div class="flex items-center transition-transform duration-500" id="partnersSliderTrack">
                         @foreach($partnersWithLogo as $partner)
                             <div class="flex h-36 min-w-0 flex-[0_0_20%] items-center justify-center px-4 py-0 max-partner:h-32 max-partner:basis-full">
-                                <a href="{{ $partner->website ?: '#' }}" @if(filled($partner->website)) target="_blank" rel="noopener" @endif>
+                                <a href="{{ $partner->website ?: '#' }}" aria-label="{{ $partner->name }}" @if(filled($partner->website)) target="_blank" rel="noopener" @endif>
                                     <x-curator-glider
                                         :media="$partner->logo_media_id"
                                         :alt="$partner->name"
