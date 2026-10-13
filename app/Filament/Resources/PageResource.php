@@ -23,6 +23,7 @@ use Filament\Actions;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 
@@ -172,13 +173,25 @@ class PageResource extends AdminResource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => \App\Support\AnalyticsAccess::allowed() ? $query->withAnalyticsViews() : $query)
             ->columns([
                 TextColumn::make('title')->sortable()->searchable()->label('Název'),
                 TextColumn::make('pageType.admin_label')->label('Šablona')->badge()->color('gray'),
                 TextColumn::make('full_slug')->label('URL cesta')
                     ->getStateUsing(fn ($record) => ($record->full_slug === '' || $record->full_slug === null) ? '/' : $record->full_slug)
                     ->searchable(),
-                TextColumn::make('lang_locale')->sortable()->label('Jazyk'),
+                TextColumn::make('views_total')
+                    ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                    ->label('Zobrazení celkem')
+                    ->state(fn (Page $record): int => (int) $record->views_total)
+                    ->numeric(locale: 'cs')
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
+                TextColumn::make('views_30d')
+                    ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                    ->label('Posledních 30 dní')
+                    ->state(fn (Page $record): int => (int) $record->views_30d)
+                    ->numeric(locale: 'cs')
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),
                 ToggleColumn::make('active')->sortable()->label('Aktivní'),
             ])
             ->filters([

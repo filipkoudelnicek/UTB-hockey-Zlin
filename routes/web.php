@@ -21,6 +21,27 @@ Route::get('/sitemap.xml', function () {
 
 /*
 |--------------------------------------------------------------------------
+| Vlastní analytika — bez session a CSRF, jen cookie a jednorázový token
+|--------------------------------------------------------------------------
+*/
+Route::middleware('throttle:analytics')
+    ->withoutMiddleware([
+        \App\Http\Middleware\LanguageMiddleware::class,
+        \App\Http\Middleware\MaintenanceMode::class,
+        \App\Http\Middleware\HandleRedirects::class,
+        \Illuminate\Session\Middleware\StartSession::class,
+        \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        \Illuminate\Foundation\Http\Middleware\PreventRequestForgery::class,
+        \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+    ])
+    ->prefix('_a')
+    ->group(function () {
+        Route::post('/c', [\App\Http\Controllers\AnalyticsController::class, 'collect'])->name('analytics.collect');
+        Route::post('/f', [\App\Http\Controllers\AnalyticsController::class, 'forget'])->name('analytics.forget');
+    });
+
+/*
+|--------------------------------------------------------------------------
 | Dynamické routes z DB (spravováno přes admin → Route Builder)
 |--------------------------------------------------------------------------
 */

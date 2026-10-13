@@ -30,7 +30,7 @@
                         <svg class="cc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
                 </div>
-                <div class="cc-cat-desc">Google Analytics / Tag Manager – sledování návštěvnosti. Slouží ke zlepšování obsahu webu.</div>
+                <div class="cc-cat-desc">Měření návštěvnosti: vlastní statistiky webu (pseudonymní identifikátor v cookie na 6 měsíců, bez IP adresy) a Google Analytics / Tag Manager. Slouží ke zlepšování obsahu webu.</div>
             </div>
         </div>
 

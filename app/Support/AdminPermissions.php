@@ -30,6 +30,7 @@ class AdminPermissions
         'sport.players' => ['label' => 'Hráči', 'group' => 'Běžná správa'],
         'sport.settings' => ['label' => 'Soutěže, týmy a stadiony', 'group' => 'Sportovní nastavení'],
         'reports.view' => ['label' => 'Tabulka a statistiky', 'group' => 'Přehledy'],
+        'analytics.view' => ['label' => 'Návštěvnost webu', 'group' => 'Přehledy'],
         'website.settings' => ['label' => 'Nastavení webu', 'group' => 'Nastavení'],
         'website.languages' => ['label' => 'Jazyky', 'group' => 'Správa webu'],
         'website.page_routes' => ['label' => 'Page Routes', 'group' => 'Správa webu'],

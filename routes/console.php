@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::call(fn () => app(SynchronizeMatchStatusesAction::class)->execute())->everyMinute();
+Schedule::command('analytics:prune')->dailyAt('03:15')->timezone('Europe/Prague');

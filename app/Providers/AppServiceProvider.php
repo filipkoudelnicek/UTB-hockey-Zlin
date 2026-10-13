@@ -9,6 +9,11 @@ use App\Observers\ArticleObserver;
 use App\Observers\OptimizeCuratorMedia;
 use App\Observers\PageObserver;
 use App\Observers\PageRouteObserver;
+use App\Services\Analytics\AnalyticsPageContext;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
@@ -42,6 +47,14 @@ class AppServiceProvider extends ServiceProvider
         PageRoute::observe(PageRouteObserver::class);
         Article::observe(ArticleObserver::class);
         CuratorMedia::observe(OptimizeCuratorMedia::class);
+
+        RateLimiter::for('analytics', fn (Request $request) => Limit::perMinute(
+            (int) config('analytics.rate_limit.per_ip_per_minute'),
+        )->by($request->ip()));
+
+        View::composer('layouts.app', function (\Illuminate\View\View $view): void {
+            $view->with('analytics', AnalyticsPageContext::build(request(), $view->getData()));
+        });
 
         // Set Curator default directory from config so uploads never have null directory
         Curator::directory(config('curator.default_directory', 'media'));

@@ -23,6 +23,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class PlayerResource extends AdminResource
@@ -122,12 +123,24 @@ class PlayerResource extends AdminResource
 
     public static function table(Table $table): Table
     {
-        return $table->columns([
+        return $table->modifyQueryUsing(fn (Builder $query) => \App\Support\AnalyticsAccess::allowed() ? $query->withAnalyticsViews() : $query)->columns([
             TextColumn::make('full_name')->label('Hráč')->searchable(['first_name', 'last_name'])->sortable(['last_name']),
             TextColumn::make('jersey_number')->label('#'),
             TextColumn::make('position')->label('Post')->formatStateUsing(fn ($state) => $state?->label() ?? $state),
             TextColumn::make('captain_role')->label('Role')->formatStateUsing(fn ($state) => $state?->label() ?? $state),
             TextColumn::make('faculty')->label('Fakulta'),
+            TextColumn::make('views_total')
+                ->label('Zobrazení celkem')
+                ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                ->state(fn (Player $record): int => (int) $record->views_total)
+                ->numeric(locale: 'cs')
+                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
+            TextColumn::make('views_30d')
+                ->label('Posledních 30 dní')
+                ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                ->state(fn (Player $record): int => (int) $record->views_30d)
+                ->numeric(locale: 'cs')
+                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),
             IconColumn::make('is_active')->boolean()->label('Aktivní'),
         ])->filters([
             SelectFilter::make('position')

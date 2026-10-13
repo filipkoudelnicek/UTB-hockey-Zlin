@@ -12,6 +12,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Player extends Model
 {
+    use \App\Models\Concerns\HasAnalyticsViews;
+
+    public const ANALYTICS_TYPE = 'player';
+
     protected $fillable = [
         'first_name', 'last_name', 'slug', 'portrait_media_id', 'date_of_birth', 'height', 'weight',
         'stick_side', 'faculty', 'bio', 'profile_heading', 'quote', 'video_media_id', 'seo_title', 'seo_description', 'seo_og_media_id',

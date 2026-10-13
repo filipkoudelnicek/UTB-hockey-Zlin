@@ -106,7 +106,9 @@ class ArticleResource extends AdminResource
 
     public static function table(Table $table): Table
     {
-        return $table->defaultSort('publish_time', 'desc')->columns([
+        return $table->defaultSort('publish_time', 'desc')
+        ->modifyQueryUsing(fn (Builder $query) => \App\Support\AnalyticsAccess::allowed() ? $query->withAnalyticsViews() : $query)
+        ->columns([
             TextColumn::make('title')->label('Název')->formatStateUsing(fn (Article $record): string => $record->plain_title)->searchable(['title', 'slug', 'excerpt'])->sortable(),
             TextColumn::make('categories.name')
                 ->label('Kategorie')
@@ -114,6 +116,18 @@ class ArticleResource extends AdminResource
                 ->separator(','),
             TextColumn::make('publish_time')->label('Publikace')->dateTime('d.m.Y H:i')->placeholder('Ihned')->sortable(),
             TextColumn::make('user.name')->label('Autor'),
+            TextColumn::make('views_total')
+                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                ->label('Zobrazení celkem')
+                ->state(fn (Article $record): int => (int) $record->views_total)
+                ->numeric(locale: 'cs')
+                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
+            TextColumn::make('views_30d')
+                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                ->label('Posledních 30 dní')
+                ->state(fn (Article $record): int => (int) $record->views_30d)
+                ->numeric(locale: 'cs')
+                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),
             ToggleColumn::make('active')->label('Aktivní'),
         ])
         ->filters([

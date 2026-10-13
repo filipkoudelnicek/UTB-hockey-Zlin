@@ -8,6 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Page extends Model
 {
+    use \App\Models\Concerns\HasAnalyticsViews;
+
+    public const ANALYTICS_TYPE = 'page';
+
     protected $casts = [
         'content' => 'array',
         'active'  => 'boolean',

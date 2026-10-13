@@ -12,6 +12,10 @@ use Illuminate\Support\Str;
 
 class Article extends Model
 {
+    use \App\Models\Concerns\HasAnalyticsViews;
+
+    public const ANALYTICS_TYPE = 'article';
+
     protected $casts = ['content'=>'array','publish_time'=>'datetime','active'=>'boolean'];
     protected $fillable = ['slug','lang_locale','user_id','title','excerpt','featured_media_id','content','active','publish_time'];
 

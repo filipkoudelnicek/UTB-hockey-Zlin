@@ -25,13 +25,26 @@
     <script>
         (function () {
             try {
-                if (localStorage.getItem('cc_prefs') !== null) {
+                var p = JSON.parse(localStorage.getItem('cc_prefs'));
+                // Souhlas s analytikou musí odpovídat aktuální verzi, jinak se lišta zobrazí znovu.
+                var fresh = p && typeof p.ts === 'number' && Date.now() - p.ts < {{ (int) config('analytics.consent_months') }} * 30.4375 * 864e5;
+                if (fresh && (p.analytics === false || p.v === {{ (int) config('analytics.consent_version') }})) {
                     document.documentElement.classList.add('cc-consent-set');
                 }
             } catch (e) {}
         })();
     </script>
     @endif
+
+    {{-- Vlastní analytika: token se vydává jen pro sledované stránky a skript jej odešle až po souhlasu --}}
+    <script>
+        window._ccVersion = {{ (int) config('analytics.consent_version') }};
+        window._ccMaxAgeMs = {{ (int) config('analytics.consent_months') }} * 30.4375 * 864e5;
+        window._analyticsForgetUrl = @json(route('analytics.forget', absolute: false));
+        @if(!empty($analytics))
+        window._analytics = @json($analytics);
+        @endif
+    </script>
 
     {{-- GA / GTM se načtou pouze po udělení souhlasu s analytickými cookies (viz cookie consent níže) --}}
     @if(\App\Models\Setting::get('google_tag_manager_id'))
