@@ -109,7 +109,7 @@ class ArticleResource extends AdminResource
         return $table->defaultSort('publish_time', 'desc')
         ->modifyQueryUsing(fn (Builder $query) => \App\Support\AnalyticsAccess::allowed() ? $query->withAnalyticsViews() : $query)
         ->columns([
-            TextColumn::make('title')->label('Název')->formatStateUsing(fn (Article $record): string => $record->plain_title)->searchable(['title', 'slug', 'excerpt'])->sortable(),
+            TextColumn::make('title')->label('Název')->formatStateUsing(fn (Article $record): string => $record->plain_title)->limit(30)->tooltip(fn (Article $record): string => $record->plain_title)->searchable(['title', 'slug', 'excerpt'])->sortable(),
             TextColumn::make('categories.name')
                 ->label('Kategorie')
                 ->badge()
@@ -118,13 +118,13 @@ class ArticleResource extends AdminResource
             TextColumn::make('user.name')->label('Autor'),
             TextColumn::make('views_total')
                  ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                ->label('Zobrazení celkem')
+                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení celkem">Celkem</span>'))
                 ->state(fn (Article $record): int => (int) $record->views_total)
                 ->numeric(locale: 'cs')
                 ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
             TextColumn::make('views_30d')
                  ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                ->label('Posledních 30 dní')
+                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">30 dní</span>'))
                 ->state(fn (Article $record): int => (int) $record->views_30d)
                 ->numeric(locale: 'cs')
                 ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),

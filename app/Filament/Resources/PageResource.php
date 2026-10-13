@@ -182,13 +182,13 @@ class PageResource extends AdminResource
                     ->searchable(),
                 TextColumn::make('views_total')
                     ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                    ->label('Zobrazení celkem')
+                    ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení celkem">Celkem</span>'))
                     ->state(fn (Page $record): int => (int) $record->views_total)
                     ->numeric(locale: 'cs')
                     ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
                 TextColumn::make('views_30d')
                     ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                    ->label('Posledních 30 dní')
+                    ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">30 dní</span>'))
                     ->state(fn (Page $record): int => (int) $record->views_30d)
                     ->numeric(locale: 'cs')
                     ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),

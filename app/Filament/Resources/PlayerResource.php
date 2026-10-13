@@ -127,16 +127,15 @@ class PlayerResource extends AdminResource
             TextColumn::make('full_name')->label('Hráč')->searchable(['first_name', 'last_name'])->sortable(['last_name']),
             TextColumn::make('jersey_number')->label('#'),
             TextColumn::make('position')->label('Post')->formatStateUsing(fn ($state) => $state?->label() ?? $state),
-            TextColumn::make('captain_role')->label('Role')->formatStateUsing(fn ($state) => $state?->label() ?? $state),
             TextColumn::make('faculty')->label('Fakulta'),
             TextColumn::make('views_total')
-                ->label('Zobrazení celkem')
+                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení celkem">Celkem</span>'))
                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
                 ->state(fn (Player $record): int => (int) $record->views_total)
                 ->numeric(locale: 'cs')
                 ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
             TextColumn::make('views_30d')
-                ->label('Posledních 30 dní')
+                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">30 dní</span>'))
                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
                 ->state(fn (Player $record): int => (int) $record->views_30d)
                 ->numeric(locale: 'cs')
