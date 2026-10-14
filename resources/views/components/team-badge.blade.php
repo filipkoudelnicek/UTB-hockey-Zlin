@@ -18,7 +18,7 @@
     @if($logo)
         <img
             src="{{ $logo }}"
-            alt="{{ $team?->name }}"
+            alt="Logo týmu {{ $team?->name }}"
             class="{{ $large ? 'h-[3rem] w-[3rem]' : 'h-12 w-12' }} block max-w-full object-contain "
         >
     @else

@@ -49,7 +49,9 @@ export function initVenueMap() {
       maxZoom: 19,
     }).addTo(map);
 
+    const mapTitle = element.dataset.mapTitle || 'CCM Aréna';
     const marker = L.marker([latitude, longitude], {
+      title: `Poloha: ${mapTitle}`,
       icon: L.divIcon({
         className: 'venue-map-marker',
         html: '<span aria-hidden="true" class="venue-map-marker__dot"></span>',
@@ -58,6 +60,7 @@ export function initVenueMap() {
         popupAnchor: [0, -38],
       }),
     }).addTo(map);
+    marker.getElement()?.setAttribute('aria-label', `Poloha: ${mapTitle}`);
 
     const popup = document.createElement('div');
     popup.className = 'venue-map-popup__content';
@@ -65,7 +68,7 @@ export function initVenueMap() {
     header.className = 'venue-map-popup__header';
     const title = document.createElement('strong');
     title.className = 'venue-map-popup__title';
-    title.textContent = element.dataset.mapTitle || 'CCM Aréna';
+    title.textContent = mapTitle;
     const address = document.createElement('span');
     address.className = 'venue-map-popup__address';
     address.textContent = element.dataset.mapAddress || '';
