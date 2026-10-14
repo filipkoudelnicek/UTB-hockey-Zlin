@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ asset('favicon.ico') }}?v={{ \App\Models\Setting::get('favicon_updated_at', '1') }}" sizes="any">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v={{ \App\Models\Setting::get('favicon_updated_at', '1') }}" sizes="any">
     {{-- Fonty používané v hlavičce a první obrazovce. --}}
     <link rel="preload" href="{{ asset('assets/fonts/barlow-condensed-700-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="{{ asset('assets/fonts/barlow-condensed-800-latin.woff2') }}" as="font" type="font/woff2" crossorigin>
