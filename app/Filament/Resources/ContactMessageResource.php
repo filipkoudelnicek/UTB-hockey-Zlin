@@ -42,7 +42,8 @@ class ContactMessageResource extends AdminResource
             TextInput::make('email')->label('E-mail'),
             TextInput::make('subject')->label('Předmět'),
             Textarea::make('message')->label('Zpráva')->rows(10)->columnSpanFull(),
-            TextInput::make('created_at')->label('Přijato'),
+            TextInput::make('created_at')->label('Přijato')
+                ->formatStateUsing(fn ($state) => $state ? \Illuminate\Support\Carbon::parse($state)->format('d.m.Y H:i') : null),
             TextInput::make('ip_address')->label('IP adresa'),
         ]);
     }
