@@ -8,6 +8,14 @@
 
 
     # ----------------------------------------------------------
+    # Kanonická URL - www -> bez www (před jakýmkoli jiným pravidlem)
+    # ----------------------------------------------------------
+    RewriteCond %{HTTP_HOST} ^www\.utbhockey\.cz$ [NC]
+    RewriteCond %{THE_REQUEST} ^[A-Z]+\s(\S*)
+    RewriteRule ^ https://utbhockey.cz%1 [R=301,L,NE]
+
+
+    # ----------------------------------------------------------
     # Kanonická URL - odstranit interní WEDOS cestu
     #
     # /domains/utbhockey.cz/public/admin-utb
