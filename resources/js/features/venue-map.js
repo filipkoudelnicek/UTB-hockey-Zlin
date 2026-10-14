@@ -76,7 +76,7 @@ export function initVenueMap() {
     link.rel = 'noopener noreferrer';
     const linkIcon = document.createElement('span');
     linkIcon.className = 'venue-map-popup__link-icon';
-    linkIcon.innerHTML = '<svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 2 2h12a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>';
+    linkIcon.innerHTML = '<svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>';
     link.append(linkIcon, document.createTextNode(element.dataset.mapLinkLabel || 'OTEVŘÍT V MAPÁCH'));
     header.append(title);
     popup.append(header, address, link);

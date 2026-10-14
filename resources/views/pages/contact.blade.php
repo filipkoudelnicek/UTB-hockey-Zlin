@@ -27,11 +27,11 @@
                 <h2 class="mb-8 font-condensed text-56 font-black uppercase leading-none">
                     <x-highlighted-text :value="data_get($page->content, 'contact.heading')" :title="data_get($page->content, 'contact.title', 'UTB')" :accent="data_get($page->content, 'contact.accent', 'REDBRICKS')" />
                 </h2>
-
                 <div class="flex flex-col gap-6">
                     {{-- Obecné dotazy --}}
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine">
+                    @if(filled(data_get($page->content, 'contact.general_label')) && (filled(data_get($contactDetails ?? [], 'email')) || filled(data_get($contactDetails ?? [], 'phone'))))
+                    <div class="group relative flex w-fit items-start gap-4">
+                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine transition-colors group-hover:bg-orange">
                             <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                                 <polyline points="22,6 12,12 2,6"></polyline>
@@ -39,35 +39,38 @@
                         </div>
                         <div>
                             <span class="mb-1 block text-10 font-bold uppercase tracking-label text-muted">
-                                {{ data_get($page->content, 'contact.general_label', 'OBECNÉ DOTAZY') }}
+                                {{ data_get($page->content, 'contact.general_label') }}
                             </span>
-                            <a class="block text-sm font-semibold text-wine no-underline transition-colors hover:!text-orange" href="mailto:{{ data_get($contactDetails ?? [], 'email', 'info@utbhockey.cz') }}">
-                                {{ data_get($contactDetails ?? [], 'email', 'info@utbhockey.cz') }}
-                            </a>
-                            <a class="mt-0.5 block text-sm font-semibold text-wine no-underline transition-colors hover:!text-orange" href="tel:{{ preg_replace('/\s+/', '', data_get($contactDetails ?? [], 'phone', '+420 777 123 456')) }}">
-                                {{ data_get($contactDetails ?? [], 'phone', '+420 777 123 456') }}
-                            </a>
+                            @if(filled(data_get($contactDetails ?? [], 'email')))
+                                <a class="block text-sm font-semibold text-wine no-underline transition-colors group-hover:!text-orange after:absolute after:inset-0 after:content-['']" href="mailto:{{ data_get($contactDetails ?? [], 'email') }}">{{ data_get($contactDetails ?? [], 'email') }}</a>
+                            @endif
+                            @if(filled(data_get($contactDetails ?? [], 'phone')))
+                                <a class="relative z-10 mt-0.5 block w-fit text-sm font-semibold text-wine no-underline transition-colors hover:!text-orange" href="tel:{{ preg_replace('/\s+/', '', data_get($contactDetails ?? [], 'phone')) }}">{{ data_get($contactDetails ?? [], 'phone') }}</a>
+                            @endif
                         </div>
                     </div>
+                    @endif
 
                     {{-- Marketing & Partneři --}}
-                    <div class="flex items-start gap-4">
-                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine">
+                    @if(filled(data_get($page->content, 'contact.marketing_label')) && filled(data_get($contactDetails ?? [], 'marketing')))
+                    <div class="group relative flex w-fit items-start gap-4">
+                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine transition-colors group-hover:bg-orange">
                             <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m3 11 18-5v12L3 14v-3z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
                             </svg>
                         </div>
                         <div>
                             <span class="mb-1 block text-10 font-bold uppercase tracking-label text-muted">
-                                {{ data_get($page->content, 'contact.marketing_label', 'MARKETING & PARTNEŘI') }}
+                                {{ data_get($page->content, 'contact.marketing_label') }}
                             </span>
-                            <a class="block text-sm font-semibold text-wine no-underline transition-colors hover:text-orange" href="mailto:{{ data_get($contactDetails ?? [], 'marketing', 'marketing@utbhockey.cz') }}">
-                                {{ data_get($contactDetails ?? [], 'marketing', 'marketing@utbhockey.cz') }}
-                            </a>
+                            <a class="block text-sm font-semibold text-wine no-underline transition-colors group-hover:text-orange after:absolute after:inset-0 after:content-['']" href="mailto:{{ data_get($contactDetails ?? [], 'marketing') }}">{{ data_get($contactDetails ?? [], 'marketing') }}</a>
                         </div>
                     </div>
+                    @endif
 
                     {{-- Domácí stadion --}}
+                    @if(filled(data_get($page->content, 'contact.venue_label')) && filled(data_get($contactDetails ?? [], 'address')))
                     <div class="flex items-start gap-4">
                         <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine">
                             <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -77,13 +80,15 @@
                         </div>
                         <div>
                             <span class="mb-1 block text-10 font-bold uppercase tracking-label text-muted">
-                                {{ data_get($page->content, 'contact.venue_label', 'DOMÁCÍ STADION') }}
+                                {{ data_get($page->content, 'contact.venue_label') }}
                             </span>
-                            <p class="m-0 text-sm font-semibold">{!! nl2br(e(data_get($contactDetails ?? [], 'address', "CCM Aréna\nBřeznická 4068\n760 01 Zlín"))) !!}</p>
+                            <p class="m-0 text-sm font-semibold">{!! nl2br(e(data_get($contactDetails ?? [], 'address'))) !!}</p>
                         </div>
                     </div>
+                    @endif
 
                     {{-- Úřední hodiny --}}
+                    @if(filled(data_get($page->content, 'contact.hours_label')) && filled(data_get($contactDetails ?? [], 'hours')))
                     <div class="flex items-start gap-4">
                         <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine">
                             <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -93,11 +98,44 @@
                         </div>
                         <div>
                             <span class="mb-1 block text-10 font-bold uppercase tracking-label text-muted">
-                                {{ data_get($page->content, 'contact.hours_label', 'ÚŘEDNÍ HODINY') }}
+                                {{ data_get($page->content, 'contact.hours_label') }}
                             </span>
-                            <p class="m-0 text-sm">{{ data_get($contactDetails ?? [], 'hours', 'Po – Pa: 9:00 – 17:00') }}</p>
+                            <p class="m-0 text-sm">{!! nl2br(e(data_get($contactDetails ?? [], 'hours'))) !!}</p>
                         </div>
                     </div>
+                    @endif
+
+                    {{-- Facebook --}}
+                    @if(filled(data_get($page->content, 'contact.facebook_label')) && filled(data_get($contactDetails ?? [], 'facebook')))
+                    <div class="group relative flex w-fit items-start gap-4">
+                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine transition-colors group-hover:bg-orange">
+                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="mb-1 block text-10 font-bold uppercase tracking-label text-muted">{{ data_get($page->content, 'contact.facebook_label') }}</span>
+                            <a class="block text-sm font-semibold text-wine no-underline transition-colors group-hover:text-orange after:absolute after:inset-0 after:content-['']" href="{{ data_get($contactDetails ?? [], 'facebook') }}" target="_blank" rel="noopener noreferrer">Facebook</a>
+                        </div>
+                    </div>
+                    @endif
+
+                    {{-- Instagram --}}
+                    @if(filled(data_get($page->content, 'contact.instagram_label')) && filled(data_get($contactDetails ?? [], 'instagram')))
+                    <div class="group relative flex w-fit items-start gap-4">
+                        <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-wine transition-colors group-hover:bg-orange">
+                            <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="mb-1 block text-10 font-bold uppercase tracking-label text-muted">{{ data_get($page->content, 'contact.instagram_label') }}</span>
+                            <a class="block text-sm font-semibold text-wine no-underline transition-colors group-hover:text-orange after:absolute after:inset-0 after:content-['']" href="{{ data_get($contactDetails ?? [], 'instagram') }}" target="_blank" rel="noopener noreferrer">Instagram</a>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
 

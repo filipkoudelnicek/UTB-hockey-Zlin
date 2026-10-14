@@ -27,6 +27,8 @@ class ContactPageType
                 TextInput::make('content.contact.marketing_label')->label('Popisek marketingu')->required(),
                 TextInput::make('content.contact.venue_label')->label('Popisek stadionu')->required(),
                 TextInput::make('content.contact.hours_label')->label('Popisek úředních hodin')->required(),
+                TextInput::make('content.contact.facebook_label')->label('Popisek Facebooku'),
+                TextInput::make('content.contact.instagram_label')->label('Popisek Instagramu'),
             ])->description('Texty vedle kontaktního formuláře a kontaktních údajů.')->icon(Heroicon::OutlinedEnvelope)->iconColor('primary')->columns(2),
             Section::make('Mapa')->schema([
                 TextInput::make('content.map.title')->label('Název stadionu v kartě')->default('CCM Aréna')->required(),

@@ -229,11 +229,13 @@ class PageDataService
     private function contact(): array
     {
         $contactDetails = [
-            'email' => Setting::get('site_email', 'info@utbhockey.cz'),
-            'phone' => Setting::get('site_phone', '+420 777 123 456'),
-            'marketing' => Setting::get('marketing_email', 'marketing@utbhockey.cz'),
-            'address' => Setting::get('site_address', "CCM Aréna\nBřeznická 4068\n760 01 Zlín"),
-            'hours' => Setting::get('office_hours', 'Po – Pa: 9:00 – 17:00'),
+            'email' => Setting::get('site_email'),
+            'phone' => Setting::get('site_phone'),
+            'marketing' => Setting::get('marketing_email'),
+            'address' => Setting::get('site_address'),
+            'hours' => Setting::get('office_hours'),
+            'facebook' => Setting::get('social_facebook'),
+            'instagram' => Setting::get('social_instagram'),
         ];
 
         return compact('contactDetails');
