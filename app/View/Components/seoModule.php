@@ -17,7 +17,16 @@ class SeoModule extends Component
         public array $seo,
         public ?string $defaultTitle = null,
         public string $type = 'website',
+        public ?string $robots = 'index, follow',
     ) {
+        if (filled($this->robots)) {
+            $directive = $this->seo['robots'] ?? null;
+            $directive = in_array($directive, ['index, follow', 'noindex, follow', 'index, nofollow', 'noindex, nofollow'], true)
+                ? $directive
+                : 'index, follow';
+            $this->robots = $directive . ', max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+        }
+
         $seoTitle = $this->seo['title'] ?? null;
         $this->pageTitle = filled($seoTitle) ? $seoTitle : (string) $this->defaultTitle;
 

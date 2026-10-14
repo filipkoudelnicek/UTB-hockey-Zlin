@@ -19,7 +19,7 @@ class Player extends Model
 
     protected $fillable = [
         'first_name', 'last_name', 'slug', 'portrait_media_id', 'date_of_birth', 'height', 'weight',
-        'stick_side', 'faculty', 'bio', 'profile_heading', 'quote', 'video_media_id', 'seo_title', 'seo_description', 'seo_og_title', 'seo_og_description', 'seo_og_media_id',
+        'stick_side', 'faculty', 'bio', 'profile_heading', 'quote', 'video_media_id', 'seo_title', 'seo_description', 'seo_og_title', 'seo_og_description', 'seo_og_media_id', 'seo_robots',
         'jersey_number', 'position', 'captain_role', 'is_active', 'source', 'external_id',
     ];
 
@@ -28,7 +28,48 @@ class Player extends Model
         'position' => PlayerPosition::class,
         'captain_role' => CaptainRole::class,
         'is_active' => 'boolean',
+        'seo_auto' => 'array',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Player $player) {
+            $player->fillSeoDefaults();
+        });
+    }
+
+    /**
+     * Doplní prázdná SEO pole z profilu hráče. Automaticky doplněné hodnoty si pamatujeme
+     * v seo_auto, aby se při změně profilu aktualizovaly a ručně upravené zůstaly beze změny.
+     */
+    public function fillSeoDefaults(): void
+    {
+        $auto = (array) $this->seo_auto;
+        $suffix = ' | '.config('app.name');
+        $title = Str::limit($this->full_name, 60 - mb_strlen($suffix), '').$suffix;
+        $ogTitle = $title;
+        $description = Str::limit(trim(strip_tags(html_entity_decode((string) $this->bio))), 157, '...');
+
+        $defaults = [
+            'seo_title' => $title,
+            'seo_description' => $description,
+            'seo_og_title' => $ogTitle,
+            'seo_og_description' => $description,
+            'seo_og_media_id' => $this->portrait_media_id,
+        ];
+
+        foreach ($defaults as $field => $value) {
+            $current = $this->{$field};
+            $isEmpty = $current === null || $current === '';
+
+            if ($isEmpty || (array_key_exists($field, $auto) && $auto[$field] == $current)) {
+                $this->{$field} = $value;
+                $auto[$field] = $value;
+            }
+        }
+
+        $this->seo_auto = $auto;
+    }
 
     public function matchStats(): HasMany { return $this->hasMany(MatchPlayerStat::class); }
     public function scopeActive(Builder $query): Builder { return $query->where('is_active', true); }
@@ -75,6 +116,7 @@ class Player extends Model
                 : (filled($this->seo_title) ? $this->seo_title : $this->full_name),
             'og_desc' => filled($this->seo_og_description) ? $this->seo_og_description : $description,
             'og_image' => $this->seo_og_media_id ?: $this->portrait_media_id,
+            'robots' => $this->seo_robots,
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Services\Analytics;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -68,18 +69,46 @@ class AnalyticsReport
     }
 
     /**
-     * @return Collection<int, object{path: string, views: int, visitors: int}>
+     * @return Collection<int, object{path: string, views: int, visitors: int}>|LengthAwarePaginator
      */
-    public function topPages(AnalyticsPeriod $period, int $limit = 20): Collection
+    public function topPages(AnalyticsPeriod $period, int $limit = 20, array $types = ['pages', 'articles', 'players'], string $search = '', string $sort = 'views', string $direction = 'desc', ?int $page = null): Collection|LengthAwarePaginator
     {
-        return DB::table('analytics_pageviews')
+        $sort = in_array($sort, ['views', 'visitors', 'path'], true) ? $sort : 'views';
+        $direction = $direction === 'asc' ? 'asc' : 'desc';
+        $search = trim($search);
+        $article = 'path LIKE ?';
+        $player = 'path LIKE ?';
+        $types = array_intersect($types, ['pages', 'articles', 'players']);
+
+        $query = DB::table('analytics_pageviews')
             ->whereBetween('view_date', $this->range($period))
+            ->where(function ($q) use ($types, $article, $player) {
+                if ($types === []) {
+                    $q->whereRaw('1 = 0');
+
+                    return;
+                }
+                if (in_array('articles', $types, true)) {
+                    $q->orWhereRaw($article, ['/aktuality/%']);
+                }
+                if (in_array('players', $types, true)) {
+                    $q->orWhereRaw($player, ['/tym/%']);
+                }
+                if (in_array('pages', $types, true)) {
+                    $q->orWhere(fn ($p) => $p->where('path', 'not like', '/aktuality/%')->where('path', 'not like', '/tym/%'));
+                }
+            })
+            ->when($search !== '', fn ($q) => $q->where('path', 'like', '%'.$search.'%'))
             ->groupBy('path')
             ->selectRaw('path, COUNT(*) AS views, COUNT(DISTINCT visitor_hash) AS visitors')
-            ->orderByDesc('views')
-            ->orderBy('path')
-            ->limit($limit)
-            ->get();
+            ->orderBy($sort, $direction)
+            ->orderBy('path');
+
+        if ($page !== null) {
+            return $query->paginate($limit, ['*'], 'page', $page);
+        }
+
+        return $query->limit($limit)->get();
     }
 
     /**

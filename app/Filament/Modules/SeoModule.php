@@ -6,6 +6,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Awcodes\Curator\Components\Forms\CuratorPicker;
@@ -42,6 +43,20 @@ class SeoModule
                                         ->url()
                                         ->helperText('Vyplňte jen tehdy, pokud má tato stránka používat jinou hlavní URL.')
                                         ->placeholder('https://www.example.cz/moje-stranka'),
+
+                                    Select::make('content.seo.robots')
+                                        ->label('Indexace a sledování odkazů')
+                                        ->options([
+                                            'index, follow' => 'index, follow',
+                                            'noindex, follow' => 'noindex, follow',
+                                            'index, nofollow' => 'index, nofollow',
+                                            'noindex, nofollow' => 'noindex, nofollow',
+                                        ])
+                                        ->default('index, follow')
+                                        ->dehydrateStateUsing(fn ($state) => filled($state) ? $state : 'index, follow')
+                                        ->native(false)
+                                        ->selectablePlaceholder(false)
+                                        ->helperText('Určuje, zda vyhledávače smí stránku indexovat a sledovat odkazy na ní.'),
                                 ]),
 
                             Tab::make('Sociální sítě')

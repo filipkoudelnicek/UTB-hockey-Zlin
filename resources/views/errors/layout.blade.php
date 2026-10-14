@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('seo')
-    <x-seo-module :seo="[]" :default-title="$code . ' — ' . $title" />
+    <x-seo-module :seo="[]" :default-title="$code . ' — ' . $title" :robots="null" />
     <meta name="robots" content="noindex, nofollow">
 @endsection
 

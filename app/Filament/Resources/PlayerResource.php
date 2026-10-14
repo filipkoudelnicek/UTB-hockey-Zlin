@@ -17,6 +17,8 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -96,34 +98,59 @@ class PlayerResource extends AdminResource
                 Textarea::make('quote')->label('Citace')->rows(3),
             ]),
             Section::make('SEO a sdílení')
-                ->description('Volitelné nastavení pro vyhledávače a náhled při sdílení profilu.')
+                ->description('Volitelné nastavení pro vyhledávače a náhled při sdílení odkazu.')
                 ->schema([
-                    Grid::make(2)->schema([
-                        TextInput::make('seo_title')
-                            ->label('Titulek ve vyhledávačích')
-                            ->helperText('Není-li vyplněn, použije se jméno hráče.'),
-                        CuratorPicker::make('seo_og_media_id')
-                            ->label('Obrázek náhledu')
-                            ->directory('media/hraci')
-                            ->limitToDirectory()
-                            ->helperText('Není-li vyplněn, použije se portrét hráče.'),
-                    ]),
-                    Textarea::make('seo_description')
-                        ->label('Popis ve vyhledávačích')
-                        ->helperText('Není-li vyplněn, vytvoří se z medailonku hráče.')
-                        ->rows(3)
-                        ->columnSpanFull(),
-                    Grid::make(2)->schema([
-                        TextInput::make('seo_og_title')
-                            ->label('Nadpis pro sdílení')
-                            ->maxLength(60)
-                            ->helperText('Není-li vyplněn, použije se SEO titulek nebo jméno hráče.'),
-                        Textarea::make('seo_og_description')
-                            ->label('Popisek pro sdílení')
-                            ->maxLength(160)
-                            ->rows(3)
-                            ->helperText('Není-li vyplněn, použije se SEO popis nebo medailonek.'),
-                    ]),
+                    Tabs::make('seo')
+                        ->tabs([
+                            Tab::make('Vyhledávače')
+                                ->icon('heroicon-o-magnifying-glass')
+                                ->schema([
+                                    Grid::make(2)->schema([
+                                        TextInput::make('seo_title')
+                                            ->label('Meta nadpis')
+                                            ->helperText('Nadpis zobrazovaný ve výsledcích vyhledávání. Není-li vyplněn, použije se jméno hráče.')
+                                            ->maxLength(60),
+                                        Textarea::make('seo_description')
+                                            ->label('Meta popisek')
+                                            ->helperText('Krátký popis zobrazovaný ve výsledcích vyhledávání. Není-li vyplněn, vytvoří se z medailonku hráče.')
+                                            ->rows(3)
+                                            ->maxLength(160),
+                                    ]),
+                                    Select::make('seo_robots')
+                                        ->label('Indexace a sledování odkazů')
+                                        ->options([
+                                            'index, follow' => 'index, follow',
+                                            'noindex, follow' => 'noindex, follow',
+                                            'index, nofollow' => 'index, nofollow',
+                                            'noindex, nofollow' => 'noindex, nofollow',
+                                        ])
+                                        ->default('index, follow')
+                                        ->dehydrateStateUsing(fn ($state) => filled($state) ? $state : 'index, follow')
+                                        ->native(false)
+                                        ->selectablePlaceholder(false)
+                                        ->helperText('Určuje, zda vyhledávače smí profil indexovat a sledovat odkazy na něm.'),
+                                ]),
+                            Tab::make('Sociální sítě')
+                                ->icon('heroicon-o-share')
+                                ->schema([
+                                    Grid::make(2)->schema([
+                                        TextInput::make('seo_og_title')
+                                            ->label('Nadpis pro sdílení')
+                                            ->maxLength(60)
+                                            ->helperText('Není-li vyplněn, použije se SEO titulek nebo jméno hráče.'),
+                                        Textarea::make('seo_og_description')
+                                            ->label('Popisek pro sdílení')
+                                            ->maxLength(160)
+                                            ->rows(3)
+                                            ->helperText('Není-li vyplněn, použije se SEO popis nebo medailonek.'),
+                                        CuratorPicker::make('seo_og_media_id')
+                                            ->label('Obrázek pro sdílení')
+                                            ->directory('media/hraci')
+                                            ->limitToDirectory()
+                                            ->helperText('Doporučený rozměr: 1200 × 630 px. Není-li vyplněn, použije se portrét hráče.'),
+                                    ]),
+                                ]),
+                        ]),
                 ])
                 ->collapsed(),
             Section::make('Pokročilé nastavení')
