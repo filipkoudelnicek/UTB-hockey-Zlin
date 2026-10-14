@@ -15,7 +15,6 @@
     <link rel="preload" href="{{ asset('assets/fonts/inter-latin-ext-variable.woff2') }}" as="font" type="font/woff2" crossorigin>
 
     @yield('seo')
-    <title>@yield('title') | {{ config('app.name') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 

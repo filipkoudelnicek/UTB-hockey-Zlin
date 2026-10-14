@@ -1,6 +1,7 @@
 @isset($seo)
-    @if(!empty($seo['title']))
-        <meta name="title" content="{{ $seo['title'] }}">
+    <title>{{ $documentTitle }}</title>
+    @if(filled($pageTitle))
+        <meta name="title" content="{{ $pageTitle }}">
     @endif
 
     @if(!empty($seo['description']))

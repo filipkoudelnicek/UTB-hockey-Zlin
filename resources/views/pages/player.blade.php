@@ -1,14 +1,7 @@
-﻿@extends('layouts.app')
-
-@section('title', $player->full_name)
+@extends('layouts.app')
 
 @section('seo')
-    @if($player->seo_description)
-        <meta name="description" content="{{ $player->seo_description }}">
-    @endif
-    @if($player->seo_og_image_url)
-        <meta property="og:image" content="{{ $player->seo_og_image_url }}">
-    @endif
+    <x-seo-module :seo="$player->seoWithDefaults()" :default-title="$player->full_name" type="profile" />
 @endsection
 
 @section('content')

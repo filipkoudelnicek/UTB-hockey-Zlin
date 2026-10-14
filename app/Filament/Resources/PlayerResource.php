@@ -99,13 +99,31 @@ class PlayerResource extends AdminResource
                 ->description('Volitelné nastavení pro vyhledávače a náhled při sdílení profilu.')
                 ->schema([
                     Grid::make(2)->schema([
-                        TextInput::make('seo_title')->label('Titulek ve vyhledávačích'),
+                        TextInput::make('seo_title')
+                            ->label('Titulek ve vyhledávačích')
+                            ->helperText('Není-li vyplněn, použije se jméno hráče.'),
                         CuratorPicker::make('seo_og_media_id')
                             ->label('Obrázek náhledu')
                             ->directory('media/hraci')
-                            ->limitToDirectory(),
+                            ->limitToDirectory()
+                            ->helperText('Není-li vyplněn, použije se portrét hráče.'),
                     ]),
-                    Textarea::make('seo_description')->label('Popis ve vyhledávačích')->rows(3)->columnSpanFull(),
+                    Textarea::make('seo_description')
+                        ->label('Popis ve vyhledávačích')
+                        ->helperText('Není-li vyplněn, vytvoří se z medailonku hráče.')
+                        ->rows(3)
+                        ->columnSpanFull(),
+                    Grid::make(2)->schema([
+                        TextInput::make('seo_og_title')
+                            ->label('Nadpis pro sdílení')
+                            ->maxLength(60)
+                            ->helperText('Není-li vyplněn, použije se SEO titulek nebo jméno hráče.'),
+                        Textarea::make('seo_og_description')
+                            ->label('Popisek pro sdílení')
+                            ->maxLength(160)
+                            ->rows(3)
+                            ->helperText('Není-li vyplněn, použije se SEO popis nebo medailonek.'),
+                    ]),
                 ])
                 ->collapsed(),
             Section::make('Pokročilé nastavení')

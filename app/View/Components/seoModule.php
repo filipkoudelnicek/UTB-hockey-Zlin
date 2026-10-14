@@ -9,12 +9,26 @@ use App\Services\MediaService;
 
 class SeoModule extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct(public $seo, public string $type = 'website')
-    {
-        //
+    public string $pageTitle;
+
+    public string $documentTitle;
+
+    public function __construct(
+        public array $seo,
+        public ?string $defaultTitle = null,
+        public string $type = 'website',
+    ) {
+        $seoTitle = $this->seo['title'] ?? null;
+        $this->pageTitle = filled($seoTitle) ? $seoTitle : (string) $this->defaultTitle;
+
+        $autoTitle = data_get($this->seo, 'og_auto.title');
+        $isGeneratedSeoTitle = filled($seoTitle) && $autoTitle === $seoTitle;
+        $appendAppName = !filled($seoTitle) || $isGeneratedSeoTitle;
+        $documentBaseTitle = $isGeneratedSeoTitle && filled($this->defaultTitle)
+            ? $this->defaultTitle
+            : $this->pageTitle;
+
+        $this->documentTitle = trim($documentBaseTitle . ($appendAppName ? ' | ' . config('app.name') : ''));
     }
 
     /**

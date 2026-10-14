@@ -9,6 +9,7 @@ use App\Services\MediaService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Player extends Model
 {
@@ -18,7 +19,7 @@ class Player extends Model
 
     protected $fillable = [
         'first_name', 'last_name', 'slug', 'portrait_media_id', 'date_of_birth', 'height', 'weight',
-        'stick_side', 'faculty', 'bio', 'profile_heading', 'quote', 'video_media_id', 'seo_title', 'seo_description', 'seo_og_media_id',
+        'stick_side', 'faculty', 'bio', 'profile_heading', 'quote', 'video_media_id', 'seo_title', 'seo_description', 'seo_og_title', 'seo_og_description', 'seo_og_media_id',
         'jersey_number', 'position', 'captain_role', 'is_active', 'source', 'external_id',
     ];
 
@@ -59,6 +60,23 @@ class Player extends Model
     public function getPortraitUrlAttribute(): ?string { return MediaService::getMediaUrl($this->portrait_media_id); }
     public function getVideoUrlAttribute(): ?string { return MediaService::getMediaUrl($this->video_media_id); }
     public function getSeoOgImageUrlAttribute(): ?string { return MediaService::getMediaFullUrl($this->seo_og_media_id); }
+
+    public function seoWithDefaults(): array
+    {
+        $description = filled($this->seo_description)
+            ? $this->seo_description
+            : Str::limit(trim(strip_tags(html_entity_decode((string) $this->bio))), 157, '...');
+
+        return [
+            'title' => $this->seo_title,
+            'description' => $description,
+            'og_title' => filled($this->seo_og_title)
+                ? $this->seo_og_title
+                : (filled($this->seo_title) ? $this->seo_title : $this->full_name),
+            'og_desc' => filled($this->seo_og_description) ? $this->seo_og_description : $description,
+            'og_image' => $this->seo_og_media_id ?: $this->portrait_media_id,
+        ];
+    }
 
     public function getQuoteAttributionAttribute(): string
     {

@@ -1,9 +1,7 @@
 @extends('layouts.app')
 
-@section('title', $page->title)
-
 @section('seo')
-    <x-seo-module :seo="$page->content['seo'] ?? []" />
+    <x-seo-module :seo="$page->content['seo'] ?? []" :default-title="$page->title" />
 @endsection
 
 @section('content')
