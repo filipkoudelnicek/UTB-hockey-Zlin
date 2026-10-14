@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Article;
 use App\Models\Competition;
+use App\Models\ContactMessage;
 use App\Models\CompetitionStanding;
 use App\Models\GameMatch;
 use App\Models\Language;
@@ -35,6 +36,7 @@ class AdminPermissions
         'website.languages' => ['label' => 'Jazyky', 'group' => 'Správa webu'],
         'website.page_routes' => ['label' => 'Page Routes', 'group' => 'Správa webu'],
         'website.redirects' => ['label' => 'Přesměrování', 'group' => 'Správa webu'],
+        'website.contact_messages' => ['label' => 'Přijaté dotazy', 'group' => 'Správa webu'],
         'settings.users' => ['label' => 'Uživatelé', 'group' => 'Nastavení'],
         'settings.roles' => ['label' => 'Role a oprávnění', 'group' => 'Nastavení'],
     ];
@@ -53,6 +55,7 @@ class AdminPermissions
             Language::class => 'website.languages',
             PageRoute::class => 'website.page_routes',
             Redirect::class => 'website.redirects',
+            ContactMessage::class => 'website.contact_messages',
             User::class => 'settings.users',
             Role::class => 'settings.roles',
             default => null,
