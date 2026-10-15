@@ -173,18 +173,18 @@ class PlayerResource extends AdminResource
             TextColumn::make('jersey_number')->label('#'),
             TextColumn::make('position')->label('Post')->formatStateUsing(fn ($state) => $state?->label() ?? $state),
             TextColumn::make('faculty')->label('Fakulta'),
-            TextColumn::make('views_total')
-                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení celkem">Celkem</span>'))
-                ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                ->state(fn (Player $record): int => (int) $record->views_total)
-                ->numeric(locale: 'cs')
-                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
             TextColumn::make('views_30d')
-                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">30 dní</span>'))
+                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">Zobrazení</span>'))
                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
                 ->state(fn (Player $record): int => (int) $record->views_30d)
                 ->numeric(locale: 'cs')
                 ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),
+            TextColumn::make('visitors_30d')
+                ->label(new \Illuminate\Support\HtmlString('<span title="Unikátní návštěvníci za posledních 30 dní">Návštěvníci</span>'))
+                ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                ->state(fn (Player $record): int => (int) $record->visitors_30d)
+                ->numeric(locale: 'cs')
+                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(visitors_30d, 0) '.$direction)),
             IconColumn::make('is_active')->boolean()->label('Aktivní'),
         ])->filters([
             SelectFilter::make('position')

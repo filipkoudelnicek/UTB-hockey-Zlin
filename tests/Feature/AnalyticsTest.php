@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\Page;
 use App\Models\User;
 use App\Services\Analytics\AnalyticsPageContext;
 use App\Services\Analytics\AnalyticsPeriod;
@@ -13,6 +14,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class AnalyticsTest extends TestCase
@@ -144,6 +146,20 @@ class AnalyticsTest extends TestCase
         $this->assertSame(['path' => '/aktuality/clanek', 'type' => 'article', 'id' => 42], $page);
     }
 
+    public function test_page_context_links_homepage_to_its_page_record(): void
+    {
+        $homepage = new Page;
+        $homepage->id = 42;
+
+        $context = AnalyticsPageContext::build(
+            Request::create('/', server: ['HTTP_USER_AGENT' => self::BROWSER]),
+            ['page' => $homepage],
+        );
+
+        $page = PageToken::consume($context['token']);
+        $this->assertSame(['path' => '/', 'type' => 'page', 'id' => 42], $page);
+    }
+
     public function test_unique_visitors_are_counted_over_the_whole_period_not_summed_by_day(): void
     {
         $a = AnalyticsTracker::newVisitorId();
@@ -194,6 +210,11 @@ class AnalyticsTest extends TestCase
         $this->assertSame(1, DB::table('analytics_visitors')->count());
         $this->assertSame(AnalyticsTracker::hash($other), DB::table('analytics_visitors')->value('visitor_hash'));
         $this->assertSame(2, (int) DB::table('analytics_daily_pages')->value('views'));
+
+        $top = app(AnalyticsReport::class)->topPages(AnalyticsPeriod::fromFilters(['period' => AnalyticsPeriod::LAST_30]));
+        $this->assertSame('/aktuality', $top[0]->path);
+        $this->assertSame(2, (int) $top[0]->views);
+        $this->assertSame(1, (int) $top[0]->visitors);
     }
 
     public function test_statistics_are_hidden_everywhere_without_permission(): void
@@ -260,6 +281,42 @@ class AnalyticsTest extends TestCase
         $this->assertStringContainsString('views_total', $row);
         $this->assertSame(2, (int) $article->analyticsViews()->sum('views'));
         $this->assertSame(1, (int) $article->analyticsViews()->where('view_date', '>=', now()->subDays(29)->toDateString())->sum('views'));
+    }
+
+    public function test_content_lists_can_count_unique_visitors_and_views_for_the_last_thirty_days(): void
+    {
+        Schema::create('articles', fn ($table) => $table->id());
+        DB::table('articles')->insert(['id' => 7]);
+
+        $returningVisitor = AnalyticsTracker::newVisitorId();
+        $otherVisitor = AnalyticsTracker::newVisitorId();
+        $this->collect('/a', $returningVisitor, [], null, 'article', 7);
+        $this->travel(31)->days();
+        $this->collect('/a', $returningVisitor, [], null, 'article', 7);
+        $this->collect('/a', $otherVisitor, [], null, 'article', 7);
+
+        $article = Article::query()->withAnalyticsViews()->findOrFail(7);
+
+        $this->assertSame(3, (int) $article->views_total);
+        $this->assertSame(2, (int) $article->views_30d);
+        $this->assertSame(2, (int) $article->visitors_30d);
+    }
+
+    public function test_homepage_counts_root_url_views_without_a_page_record_link(): void
+    {
+        Schema::create('pages', function ($table) {
+            $table->id();
+            $table->string('type');
+        });
+        DB::table('pages')->insert(['id' => 42, 'type' => 'homepage']);
+
+        $this->collect('/', AnalyticsTracker::newVisitorId());
+        $this->collect('/', AnalyticsTracker::newVisitorId());
+
+        $homepage = Page::query()->withAnalyticsViews()->findOrFail(42);
+
+        $this->assertSame(2, (int) $homepage->views_30d);
+        $this->assertSame(2, (int) $homepage->visitors_30d);
     }
 
     public function test_prune_removes_old_raw_data_but_keeps_daily_totals(): void

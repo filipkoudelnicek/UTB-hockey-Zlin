@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use App\Services\MediaService;
+use App\Services\Analytics\AnalyticsPageContext;
 use App\Services\PageDataService;
 use App\Services\UrlService;
 use Illuminate\Http\Request;
@@ -78,11 +79,13 @@ class PageController extends Controller
     private function render(Page $page, Request $request)
     {
         $template = optional($page->pageType)->template ?? 'pages.' . $page->type;
-
-        return view($template, array_merge(
+        $data = array_merge(
             ['page' => $page],
             $this->pageData->forPage($page, $request),
-        ));
+        );
+        $data['analytics'] = AnalyticsPageContext::build($request, ['page' => $page]);
+
+        return view($template, $data);
     }
     
     public static function getMediaUrl($mediaId)

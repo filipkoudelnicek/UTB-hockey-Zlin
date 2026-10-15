@@ -180,18 +180,18 @@ class PageResource extends AdminResource
                 TextColumn::make('full_slug')->label('URL cesta')
                     ->getStateUsing(fn ($record) => ($record->full_slug === '' || $record->full_slug === null) ? '/' : $record->full_slug)
                     ->searchable(),
-                TextColumn::make('views_total')
-                    ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                    ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení celkem">Celkem</span>'))
-                    ->state(fn (Page $record): int => (int) $record->views_total)
-                    ->numeric(locale: 'cs')
-                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
                 TextColumn::make('views_30d')
                     ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                    ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">30 dní</span>'))
+                    ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">Zobrazení</span>'))
                     ->state(fn (Page $record): int => (int) $record->views_30d)
                     ->numeric(locale: 'cs')
                     ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),
+                TextColumn::make('visitors_30d')
+                    ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                    ->label(new \Illuminate\Support\HtmlString('<span title="Unikátní návštěvníci za posledních 30 dní">Návštěvníci</span>'))
+                    ->state(fn (Page $record): int => (int) $record->visitors_30d)
+                    ->numeric(locale: 'cs')
+                    ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(visitors_30d, 0) '.$direction)),
                 ToggleColumn::make('active')->sortable()->label('Aktivní'),
             ])
             ->filters([

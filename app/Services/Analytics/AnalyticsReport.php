@@ -80,8 +80,15 @@ class AnalyticsReport
         $player = 'path LIKE ?';
         $types = array_intersect($types, ['pages', 'articles', 'players']);
 
-        $query = DB::table('analytics_pageviews')
+        $visitorCounts = DB::table('analytics_pageviews')
             ->whereBetween('view_date', $this->range($period))
+            ->groupBy('path')
+            ->selectRaw('path, COUNT(DISTINCT visitor_hash) AS visitors');
+
+        $query = DB::table('analytics_daily_pages')
+            ->leftJoinSub($visitorCounts, 'pageview_visitors', fn ($join) => $join
+                ->on('analytics_daily_pages.path', '=', 'pageview_visitors.path'))
+            ->whereBetween('analytics_daily_pages.view_date', $this->range($period))
             ->where(function ($q) use ($types, $article, $player) {
                 if ($types === []) {
                     $q->whereRaw('1 = 0');
@@ -89,18 +96,20 @@ class AnalyticsReport
                     return;
                 }
                 if (in_array('articles', $types, true)) {
-                    $q->orWhereRaw($article, ['/aktuality/%']);
+                    $q->orWhereRaw('analytics_daily_pages.'.$article, ['/aktuality/%']);
                 }
                 if (in_array('players', $types, true)) {
-                    $q->orWhereRaw($player, ['/tym/%']);
+                    $q->orWhereRaw('analytics_daily_pages.'.$player, ['/tym/%']);
                 }
                 if (in_array('pages', $types, true)) {
-                    $q->orWhere(fn ($p) => $p->where('path', 'not like', '/aktuality/%')->where('path', 'not like', '/tym/%'));
+                    $q->orWhere(fn ($p) => $p
+                        ->where('analytics_daily_pages.path', 'not like', '/aktuality/%')
+                        ->where('analytics_daily_pages.path', 'not like', '/tym/%'));
                 }
             })
-            ->when($search !== '', fn ($q) => $q->where('path', 'like', '%'.$search.'%'))
-            ->groupBy('path')
-            ->selectRaw('path, COUNT(*) AS views, COUNT(DISTINCT visitor_hash) AS visitors')
+            ->when($search !== '', fn ($q) => $q->where('analytics_daily_pages.path', 'like', '%'.$search.'%'))
+            ->groupBy('analytics_daily_pages.path')
+            ->selectRaw('analytics_daily_pages.path AS path, SUM(analytics_daily_pages.views) AS views, COALESCE(MAX(pageview_visitors.visitors), 0) AS visitors')
             ->orderBy($sort, $direction)
             ->orderBy('path');
 

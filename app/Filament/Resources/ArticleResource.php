@@ -116,18 +116,18 @@ class ArticleResource extends AdminResource
                 ->separator(','),
             TextColumn::make('publish_time')->label('Publikace')->dateTime('d.m.Y H:i')->placeholder('Ihned')->sortable(),
             TextColumn::make('user.name')->label('Autor'),
-            TextColumn::make('views_total')
-                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení celkem">Celkem</span>'))
-                ->state(fn (Article $record): int => (int) $record->views_total)
-                ->numeric(locale: 'cs')
-                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_total, 0) '.$direction)),
             TextColumn::make('views_30d')
                  ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
-                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">30 dní</span>'))
+                ->label(new \Illuminate\Support\HtmlString('<span title="Zobrazení za posledních 30 dní">Zobrazení</span>'))
                 ->state(fn (Article $record): int => (int) $record->views_30d)
                 ->numeric(locale: 'cs')
                 ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(views_30d, 0) '.$direction)),
+            TextColumn::make('visitors_30d')
+                 ->visible(fn (): bool => \App\Support\AnalyticsAccess::allowed())
+                ->label(new \Illuminate\Support\HtmlString('<span title="Unikátní návštěvníci za posledních 30 dní">Návštěvníci</span>'))
+                ->state(fn (Article $record): int => (int) $record->visitors_30d)
+                ->numeric(locale: 'cs')
+                ->sortable(query: fn (Builder $query, string $direction) => $query->orderByRaw('COALESCE(visitors_30d, 0) '.$direction)),
             ToggleColumn::make('active')->label('Aktivní'),
         ])
         ->filters([

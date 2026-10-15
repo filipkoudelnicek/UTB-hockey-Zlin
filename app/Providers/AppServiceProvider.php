@@ -53,7 +53,9 @@ class AppServiceProvider extends ServiceProvider
         )->by($request->ip()));
 
         View::composer('layouts.app', function (\Illuminate\View\View $view): void {
-            $view->with('analytics', AnalyticsPageContext::build(request(), $view->getData()));
+            if (! array_key_exists('analytics', $view->getData())) {
+                $view->with('analytics', AnalyticsPageContext::build(request(), $view->getData()));
+            }
         });
 
         // Set Curator default directory from config so uploads never have null directory
