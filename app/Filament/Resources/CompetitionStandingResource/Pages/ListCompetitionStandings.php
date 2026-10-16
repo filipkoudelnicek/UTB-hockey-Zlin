@@ -49,8 +49,22 @@ class ListCompetitionStandings extends ListRecords
                         ->default(0)
                         ->required()
                         ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
+                    TextInput::make('overtime_wins')
+                        ->label('Výhry v prodloužení (VP)')
+                        ->numeric()
+                        ->minValue(0)
+                        ->default(0)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
                     TextInput::make('losses')
                         ->label('Prohry (P)')
+                        ->numeric()
+                        ->minValue(0)
+                        ->default(0)
+                        ->required()
+                        ->disabled(fn (Get $get): bool => (int) $get('team_id') === (int) Team::club()?->getKey()),
+                    TextInput::make('overtime_losses')
+                        ->label('Prohry v prodloužení (PP)')
                         ->numeric()
                         ->minValue(0)
                         ->default(0)
@@ -88,6 +102,8 @@ class ListCompetitionStandings extends ListRecords
                     if ((int) $data['team_id'] === (int) Team::club()?->getKey()) {
                         $data['wins'] = 0;
                         $data['losses'] = 0;
+                        $data['overtime_wins'] = 0;
+                        $data['overtime_losses'] = 0;
                         $data['points'] = 0;
                         $data['goals_for'] = null;
                         $data['goals_against'] = null;

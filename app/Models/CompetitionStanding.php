@@ -14,6 +14,8 @@ class CompetitionStanding extends Model
         'team_id',
         'wins',
         'losses',
+        'overtime_wins',
+        'overtime_losses',
         'points',
         'goals_for',
         'goals_against',
@@ -33,7 +35,7 @@ class CompetitionStanding extends Model
     {
         return $this->isClubTeam() && $this->automaticStatsLoaded()
             ? (int) ($this->attributes['automatic_games_played'] ?? 0)
-            : (int) $this->wins + (int) $this->losses;
+            : (int) $this->wins + (int) $this->overtime_wins + (int) $this->overtime_losses + (int) $this->losses;
     }
 
     public function getWinsAttribute(): int
@@ -48,6 +50,20 @@ class CompetitionStanding extends Model
         return $this->isClubTeam() && $this->automaticStatsLoaded()
             ? (int) ($this->attributes['automatic_losses'] ?? 0)
             : (int) ($this->attributes['losses'] ?? 0);
+    }
+
+    public function getOvertimeWinsAttribute(): int
+    {
+        return $this->isClubTeam() && $this->automaticStatsLoaded()
+            ? (int) ($this->attributes['automatic_overtime_wins'] ?? 0)
+            : (int) ($this->attributes['overtime_wins'] ?? 0);
+    }
+
+    public function getOvertimeLossesAttribute(): int
+    {
+        return $this->isClubTeam() && $this->automaticStatsLoaded()
+            ? (int) ($this->attributes['automatic_overtime_losses'] ?? 0)
+            : (int) ($this->attributes['overtime_losses'] ?? 0);
     }
 
     public function getPointsAttribute(): int
@@ -115,8 +131,10 @@ class CompetitionStanding extends Model
         return $query
             ->addSelect('competition_standings.*')
             ->selectSub(static::clubMatchStatsQuery($clubTeamId, 'COUNT(*)'), 'automatic_games_played')
-            ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::outcomeCountExpression(true)), 'automatic_wins')
-            ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::outcomeCountExpression(false)), 'automatic_losses')
+            ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::outcomeCountExpression(true, false)), 'automatic_wins')
+            ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::outcomeCountExpression(false, false)), 'automatic_losses')
+            ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::outcomeCountExpression(true, true)), 'automatic_overtime_wins')
+            ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::outcomeCountExpression(false, true)), 'automatic_overtime_losses')
             ->selectSub(static::clubMatchStatsQuery($clubTeamId, static::pointsExpression()), 'automatic_points')
             ->selectSub($goalsFor, 'automatic_goals_for')
             ->selectSub($goalsAgainst, 'automatic_goals_against');
@@ -167,11 +185,12 @@ class CompetitionStanding extends Model
             });
     }
 
-    private static function outcomeCountExpression(bool $wins): string
+    private static function outcomeCountExpression(bool $wins, bool $overtime): string
     {
         $comparison = $wins ? '>' : '<';
+        $overtimeFlag = $overtime ? 1 : 0;
 
-        return "SUM(CASE WHEN (matches.home_team_id = competition_standings.team_id AND matches.home_score {$comparison} matches.away_score) OR (matches.away_team_id = competition_standings.team_id AND matches.away_score {$comparison} matches.home_score) THEN 1 ELSE 0 END)";
+        return "SUM(CASE WHEN (matches.home_team_id = competition_standings.team_id AND matches.home_score {$comparison} matches.away_score) OR (matches.away_team_id = competition_standings.team_id AND matches.away_score {$comparison} matches.home_score) THEN CASE WHEN COALESCE(matches.went_to_overtime, 0) = {$overtimeFlag} THEN 1 ELSE 0 END ELSE 0 END)";
     }
 
     private static function pointsExpression(): string
